@@ -1,44 +1,66 @@
-module Elmscrew.Interpreter exposing (Interpreter, init, step)
+module Elmscrew.Interpreter exposing (Interpreter, init, step, runToCompletion, Status(..))
 
 import Elmscrew.Parser exposing (..)
 import Elmscrew.Machine as Machine exposing (..)
 import Elmscrew.Utils exposing (..)
 
 import Array exposing (Array,get)
+import Char exposing (..)
 
-type alias Interpreter =
+type alias Interpreter a =
     { instructions : Array Inst
     , machine : Machine
     , pc : Int
+    , inputProvider : (a -> Char)
+    , output : Maybe Char
     }
 
-init str = Interpreter (parse str) Machine.init 0
+init inputProvider str = Interpreter (parse str) Machine.init 0 inputProvider Nothing
 
-step interp =
-    case unwrap "No such instruction" (Array.get interp.pc interp.instructions) of
-        Right -> { interp
-                     | machine = right interp.machine
-                     , pc = interp.pc + 1
-                 }
+type Status a = Running (Interpreter a) (Maybe Char) | Complete (Interpreter a)
+
+step data interp =
+    case (Array.get interp.pc interp.instructions) of
+        Just Right ->
+            Running { interp
+                        | machine = right interp.machine
+                        , pc = interp.pc + 1
+                    } Nothing
        
-        Left -> { interp
-                    | machine = left interp.machine
-                    , pc = interp.pc + 1
-                }
+        Just Left ->
+            Running { interp
+                        | machine = left interp.machine
+                        , pc = interp.pc + 1
+                    } Nothing
 
-        Inc  -> { interp
-                    | machine = incr interp.machine
-                    , pc = interp.pc + 1
-                }
+        Just Inc ->
+            Running { interp
+                       | machine = incr interp.machine
+                       , pc = interp.pc + 1
+                    } Nothing 
 
-        Dec  -> { interp
-                     | machine = decr interp.machine
-                     , pc = interp.pc + 1
-                }
+        Just Dec  ->
+            Running { interp
+                        | machine = decr interp.machine
+                        , pc = interp.pc + 1
+                    } Nothing
 
-        Output -> interp
-        Input -> interp
-        Loop i -> interp
+        Just Output ->
+            Running { interp | pc = interp.pc + 1 }
+                    (Just <| Char.fromCode <| Machine.get interp.machine)
+                
+        Just Input -> Running interp Nothing
+        Just (Loop i) ->
+            Running { interp | pc = if Machine.get interp.machine > 0 then i else interp.pc + 1} Nothing
+                          
+        Nothing -> Complete interp
 
-           
-                  
+runToCompletion data output interp =
+    case step data interp of
+        Running newInterp char ->
+            let newOutput = case char of
+                                Just c -> (String.cons c output)
+                                Nothing -> output
+            in
+            runToCompletion data newOutput newInterp
+        Complete newInterp -> (newInterp, String.reverse output)
