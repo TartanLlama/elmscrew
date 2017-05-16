@@ -1,13 +1,10 @@
-module Elmscrew.Parser exposing (parse)
+module Elmscrew.Parser exposing (parse, Inst(..))
+
+import Elmscrew.Utils exposing (unwrap)
 
 import Array exposing (Array)
 
 type Inst = Right | Left | Inc | Dec | Output | Input | Loop Int
-
-unwrap msg maybe =
-    case maybe of
-        Just a -> a
-        Nothing -> Debug.crash msg
 
 toInst : Int -> List Int -> Char -> (Maybe Inst, List Int)
 toInst charIdx stack c = case c of

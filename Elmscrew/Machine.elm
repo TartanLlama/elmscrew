@@ -1,10 +1,10 @@
-module Elmscrew.Machine exposing (Machine, empty, get, set, incr, decr, left, right)
+module Elmscrew.Machine exposing (Machine, init, get, set, incr, decr, left, right)
 
 import Dict exposing (Dict, get)
 
 type alias Machine = {tape: Dict Int Int, position: Int}
 
-empty = Machine (Dict.empty) 0
+init = Machine (Dict.empty) 0
 
 get : Machine -> Int
 get machine   = Maybe.withDefault 0 <| Dict.get machine.position machine.tape
