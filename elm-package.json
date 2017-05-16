@@ -1,7 +1,7 @@
 {
     "version": "0.1.0",
-    "summary": "a brainfuck debugger and interpreter"
-    "repository": "https://github.com/TartanLlama/elmscrew",
+    "summary": "a brainfuck debugger and interpreter",
+    "repository": "https://github.com/TartanLlama/elmscrew.git",
     "license": "MIT",
     "source-directories": [
         "."

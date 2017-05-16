@@ -1,4 +1,4 @@
-module Elmscrew.Interpreter exposing (Interpreter, init, step, runToCompletion, Status(..))
+module Elmscrew.Interpreter exposing (Interpreter, initWithStr, initWithProg, step, runToCompletion, Status(..))
 
 import Elmscrew.Parser exposing (..)
 import Elmscrew.Machine as Machine exposing (..)
@@ -15,7 +15,8 @@ type alias Interpreter a =
     , output : Maybe Char
     }
 
-init inputProvider str = Interpreter (parse str) Machine.init 0 inputProvider Nothing
+initWithStr inputProvider str = initWithProg inputProvider <| parse str
+initWithProg inputProvider prog = Interpreter prog Machine.init 0 inputProvider Nothing                         
 
 type Status a = Running (Interpreter a) (Maybe Char) | Complete (Interpreter a)
 

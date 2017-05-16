@@ -1,4 +1,4 @@
-module Elmscrew.Parser exposing (parse, Inst(..))
+module Elmscrew.Parser exposing (parse, toChar, Inst(..), serializeProgram)
 
 import Elmscrew.Utils exposing (unwrap)
 
@@ -6,6 +6,18 @@ import Array exposing (Array)
 
 type Inst = Right | Left | Inc | Dec | Output | Input | Loop Int
 
+toChar : Inst -> Char
+toChar inst = case inst of
+                  Right -> '>' 
+                  Left -> '<' 
+                  Inc -> '+' 
+                  Dec -> '-' 
+                  Output -> '.' 
+                  Input -> ',' 
+                  Loop i -> ']'
+                  
+                  
+    
 toInst : Int -> List Int -> Char -> (Maybe Inst, List Int)
 toInst charIdx stack c = case c of
                '>' -> (Just Right, stack)
@@ -42,3 +54,5 @@ buildProg charIdx stack chars =
                 inst :: buildProg (charIdx+1) newStack xs
         [] ->
             []
+
+
