@@ -1,4 +1,4 @@
-import Html exposing (Html,div,text,button,input)
+import Html exposing (Html,div,text,button,textarea)
 import Html.Attributes exposing (placeholder)
 import Html.Events exposing (onInput, onClick)
 import Array exposing (Array)
@@ -63,7 +63,7 @@ subscriptions model = Sub.none
 
 view model =
     div []
-        [ input [ placeholder "Program", onInput NewContent] []
+        [ textarea [ placeholder "Program", onInput NewContent] []
         , button [ onClick Run ] [ text "Run" ]
         , button [ onClick BuildGraph ] [ text "Visualise" ]            
         , text model.output
