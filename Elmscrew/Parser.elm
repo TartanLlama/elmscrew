@@ -1,10 +1,10 @@
-module Elmscrew.Parser exposing (parse, toChar, Inst(..), serializeProgram)
+module Elmscrew.Parser exposing (parse, toChar, Inst(..))
 
 import Elmscrew.Utils exposing (unwrap)
 
 import Array exposing (Array)
 
-type Inst = Right | Left | Inc | Dec | Output | Input | Loop Int
+type Inst = Right | Left | Inc | Dec | Output | Input | JumpMarker | Jump Int
 
 toChar : Inst -> Char
 toChar inst = case inst of
@@ -13,22 +13,23 @@ toChar inst = case inst of
                   Inc -> '+' 
                   Dec -> '-' 
                   Output -> '.' 
-                  Input -> ',' 
-                  Loop i -> ']'
+                  Input -> ','
+                  JumpMarker -> '['                            
+                  Jump i -> ']'
                   
                   
     
-toInst : Int -> List Int -> Char -> (Maybe Inst, List Int)
+toInst : Int -> List Int -> Char -> (Maybe Inst, List Int, Int)
 toInst charIdx stack c = case c of
-               '>' -> (Just Right, stack)
-               '<' -> (Just Left, stack)
-               '+' -> (Just Inc, stack)
-               '-' -> (Just Dec, stack)
-               '.' -> (Just Output, stack)
-               ',' -> (Just Input, stack)
-               '[' -> (Nothing, charIdx :: stack)
-               ']' -> (Just <| Loop <| unwrap "Unmatched brackets" <| List.head stack, List.drop 1 stack)
-               _   -> (Nothing, stack)
+               '>' -> (Just Right, stack, charIdx+1)
+               '<' -> (Just Left, stack, charIdx+1)
+               '+' -> (Just Inc, stack, charIdx+1)
+               '-' -> (Just Dec, stack, charIdx+1)
+               '.' -> (Just Output, stack, charIdx+1)
+               ',' -> (Just Input, stack, charIdx+1)
+               '[' -> (Just JumpMarker, charIdx :: stack, charIdx+1)
+               ']' -> (Just <| Jump <| unwrap "Unmatched brackets" <| List.head stack, List.drop 1 stack, charIdx+1)
+               _   -> (Nothing, stack, charIdx)
 
 isJust : Maybe a -> Bool
 isJust a =
@@ -50,8 +51,8 @@ buildProg : Int -> List Int -> List Char -> List (Maybe Inst)
 buildProg charIdx stack chars =
     case chars of
         (x::xs) ->
-            let (inst, newStack) = (toInst charIdx stack x) in
-                inst :: buildProg (charIdx+1) newStack xs
+            let (inst, newStack, newCharIdx) = (toInst charIdx stack x) in
+                inst :: buildProg newCharIdx newStack xs
         [] ->
             []
 

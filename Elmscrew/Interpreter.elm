@@ -50,8 +50,9 @@ step data interp =
             Running { interp | pc = interp.pc + 1 }
                     (Just <| Char.fromCode <| Machine.get interp.machine)
                 
-        Just Input -> Running interp Nothing
-        Just (Loop i) ->
+        Just Input -> Running { interp | pc = interp.pc + 1 } Nothing
+        Just JumpMarker -> Running { interp | pc = interp.pc + 1 } Nothing
+        Just (Jump i) ->
             Running { interp | pc = if Machine.get interp.machine > 0 then i else interp.pc + 1} Nothing
                           
         Nothing -> Complete interp

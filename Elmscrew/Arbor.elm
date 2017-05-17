@@ -1,5 +1,6 @@
 port module Elmscrew.Arbor exposing (..)
 
 import Elmscrew.Parser exposing (Inst(..))
+import Json.Encode
 
-port displayGraph : List (String, List Int) -> Cmd msg
+port displayGraph : (Json.Encode.Value, Json.Encode.Value) -> Cmd msg
