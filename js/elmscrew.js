@@ -8596,13 +8596,91 @@ var _elm_lang$html$Html_Events$Options = F2(
 		return {stopPropagation: a, preventDefault: b};
 	});
 
+var _TartanLlama$elmscrew$Main$buildTape = function (mach) {
+	var tableStyle = _elm_lang$html$Html_Attributes$style(
+		{
+			ctor: '::',
+			_0: {ctor: '_Tuple2', _0: 'overflow-x', _1: 'scroll'},
+			_1: {
+				ctor: '::',
+				_0: {ctor: '_Tuple2', _0: 'width', _1: '700px'},
+				_1: {ctor: '[]'}
+			}
+		});
+	var buildHeaderList = A2(
+		_elm_lang$core$List$map,
+		function (_p0) {
+			return A2(
+				_elm_lang$html$Html$td,
+				{ctor: '[]'},
+				_elm_lang$core$List$singleton(
+					_elm_lang$html$Html$text(
+						_elm_lang$core$Basics$toString(_p0))));
+		},
+		A2(_elm_lang$core$List$range, 0, 511));
+	var getData = F2(
+		function (tape, n) {
+			var _p1 = A2(_elm_lang$core$Dict$get, n, tape);
+			if (_p1.ctor === 'Just') {
+				return _p1._0;
+			} else {
+				return 0;
+			}
+		});
+	var buildDataList = F2(
+		function (tape, n) {
+			return _elm_lang$core$Native_Utils.eq(n, 512) ? {ctor: '[]'} : {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$td,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(
+							_elm_lang$core$Basics$toString(
+								A2(getData, tape, n))),
+						_1: {ctor: '[]'}
+					}),
+				_1: A2(buildDataList, tape, n + 1)
+			};
+		});
+	return A2(
+		_elm_lang$html$Html$table,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: tableStyle,
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$tr,
+						{ctor: '[]'},
+						buildHeaderList),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$tr,
+							{ctor: '[]'},
+							A2(buildDataList, mach.tape, 0)),
+						_1: {ctor: '[]'}
+					}
+				}),
+			_1: {ctor: '[]'}
+		});
+};
 var _TartanLlama$elmscrew$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
 var _TartanLlama$elmscrew$Main$generateProgramGraphNodes = F2(
 	function (prog, n) {
-		var _p0 = prog;
-		if (_p0.ctor === '::') {
+		var _p2 = prog;
+		if (_p2.ctor === '::') {
 			return {
 				ctor: '::',
 				_0: _elm_lang$core$Json_Encode$object(
@@ -8620,12 +8698,12 @@ var _TartanLlama$elmscrew$Main$generateProgramGraphNodes = F2(
 								_0: 'label',
 								_1: _elm_lang$core$Json_Encode$string(
 									_elm_lang$core$String$fromChar(
-										_TartanLlama$elmscrew$Elmscrew_Parser$toChar(_p0._0)))
+										_TartanLlama$elmscrew$Elmscrew_Parser$toChar(_p2._0)))
 							},
 							_1: {ctor: '[]'}
 						}
 					}),
-				_1: A2(_TartanLlama$elmscrew$Main$generateProgramGraphNodes, _p0._1, n + 1)
+				_1: A2(_TartanLlama$elmscrew$Main$generateProgramGraphNodes, _p2._1, n + 1)
 			};
 		} else {
 			return {ctor: '[]'};
@@ -8633,8 +8711,8 @@ var _TartanLlama$elmscrew$Main$generateProgramGraphNodes = F2(
 	});
 var _TartanLlama$elmscrew$Main$getLoopEdges = F2(
 	function (inst, n) {
-		var _p1 = inst;
-		if (_p1.ctor === 'Jump') {
+		var _p3 = inst;
+		if (_p3.ctor === 'Jump') {
 			return {
 				ctor: '::',
 				_0: _elm_lang$core$Json_Encode$object(
@@ -8650,7 +8728,7 @@ var _TartanLlama$elmscrew$Main$getLoopEdges = F2(
 							_0: {
 								ctor: '_Tuple2',
 								_0: 'to',
-								_1: _elm_lang$core$Json_Encode$int(_p1._0)
+								_1: _elm_lang$core$Json_Encode$int(_p3._0)
 							},
 							_1: {ctor: '[]'}
 						}
@@ -8663,9 +8741,9 @@ var _TartanLlama$elmscrew$Main$getLoopEdges = F2(
 	});
 var _TartanLlama$elmscrew$Main$generateProgramGraphEdges = F2(
 	function (prog, n) {
-		var _p2 = prog;
-		if (_p2.ctor === '::') {
-			if (_p2._1.ctor === '::') {
+		var _p4 = prog;
+		if (_p4.ctor === '::') {
+			if (_p4._1.ctor === '::') {
 				return A2(
 					_elm_lang$core$Basics_ops['++'],
 					{
@@ -8692,16 +8770,16 @@ var _TartanLlama$elmscrew$Main$generateProgramGraphEdges = F2(
 					},
 					A2(
 						_elm_lang$core$Basics_ops['++'],
-						A2(_TartanLlama$elmscrew$Main$getLoopEdges, _p2._0, n),
+						A2(_TartanLlama$elmscrew$Main$getLoopEdges, _p4._0, n),
 						A2(
 							_TartanLlama$elmscrew$Main$generateProgramGraphEdges,
-							{ctor: '::', _0: _p2._1._0, _1: _p2._1._1},
+							{ctor: '::', _0: _p4._1._0, _1: _p4._1._1},
 							n + 1)));
 			} else {
 				return A2(
 					_elm_lang$core$Basics_ops['++'],
-					A2(_TartanLlama$elmscrew$Main$getLoopEdges, _p2._0, n),
-					A2(_TartanLlama$elmscrew$Main$generateProgramGraphEdges, _p2._1, n + 1));
+					A2(_TartanLlama$elmscrew$Main$getLoopEdges, _p4._0, n),
+					A2(_TartanLlama$elmscrew$Main$generateProgramGraphEdges, _p4._1, n + 1));
 			}
 		} else {
 			return {ctor: '[]'};
@@ -8709,14 +8787,14 @@ var _TartanLlama$elmscrew$Main$generateProgramGraphEdges = F2(
 	});
 var _TartanLlama$elmscrew$Main$update = F2(
 	function (msg, model) {
-		var _p3 = msg;
-		switch (_p3.ctor) {
+		var _p5 = msg;
+		switch (_p5.ctor) {
 			case 'NewContent':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{program: _p3._0}),
+						{program: _p5._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'BuildGraph':
@@ -8735,23 +8813,23 @@ var _TartanLlama$elmscrew$Main$update = F2(
 						})
 				};
 			default:
+				var _p6 = A3(
+					_TartanLlama$elmscrew$Elmscrew_Interpreter$runToCompletion,
+					0,
+					'',
+					A2(
+						_TartanLlama$elmscrew$Elmscrew_Interpreter$initWithStr,
+						function (x) {
+							return _elm_lang$core$Native_Utils.chr(' ');
+						},
+						model.program));
+				var newInterp = _p6._0;
+				var newOutput = _p6._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{
-							output: _elm_lang$core$Tuple$second(
-								A3(
-									_TartanLlama$elmscrew$Elmscrew_Interpreter$runToCompletion,
-									0,
-									'',
-									A2(
-										_TartanLlama$elmscrew$Elmscrew_Interpreter$initWithStr,
-										function (x) {
-											return _elm_lang$core$Native_Utils.chr(' ');
-										},
-										model.program)))
-						}),
+						{output: newOutput, machine: newInterp.machine}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 		}
@@ -8819,7 +8897,11 @@ var _TartanLlama$elmscrew$Main$view = function (model) {
 					_1: {
 						ctor: '::',
 						_0: _elm_lang$html$Html$text(model.output),
-						_1: {ctor: '[]'}
+						_1: {
+							ctor: '::',
+							_0: _TartanLlama$elmscrew$Main$buildTape(model.machine),
+							_1: {ctor: '[]'}
+						}
 					}
 				}
 			}

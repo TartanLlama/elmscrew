@@ -1,9 +1,10 @@
-import Html exposing (Html,div,text,button,textarea)
-import Html.Attributes exposing (placeholder)
+import Html exposing (Html,div,text,button,textarea,td,table,tr)
+import Html.Attributes exposing (placeholder,style)
 import Html.Events exposing (onInput, onClick)
 import Array exposing (Array)
 import Json.Encode exposing (int, list, object, string)
-
+import Dict
+   
 import Elmscrew.Machine as Machine exposing (Machine)
 import Elmscrew.Interpreter as Interpreter exposing (Interpreter)
 import Elmscrew.Arbor exposing (displayGraph)
@@ -31,9 +32,11 @@ update msg model =
         BuildGraph -> let parsedProg = (Array.toList (parse model.program)) in
             (model, displayGraph (list (generateProgramGraphNodes parsedProg 0),
                                   list (generateProgramGraphEdges parsedProg 0)))
-        run -> ({model |
-                     output = Tuple.second <|
-                              Interpreter.runToCompletion 0 "" (Interpreter.initWithStr (\x->'\0') model.program)}, Cmd.none)
+        run ->
+            let (newInterp, newOutput) =
+                    Interpreter.runToCompletion 0 "" (Interpreter.initWithStr (\x->'\0') model.program)
+            in
+                ({model | output = newOutput, machine = newInterp.machine}, Cmd.none)
 
 getLoopEdges : Inst -> Int -> List Json.Encode.Value
 getLoopEdges inst n = case inst of
@@ -61,12 +64,30 @@ generateProgramGraphEdges prog n =
 subscriptions : model -> Sub msg
 subscriptions model = Sub.none
 
+buildTape mach =
+    let
+        getData tape n = case (Dict.get n tape) of
+                   Just data -> data
+                   Nothing -> 0
+
+        buildDataList tape n =
+            if n == 512 then []
+            else (td [] [ text <| toString <| getData tape n ]) :: buildDataList tape (n+1)
+
+        buildHeaderList = (List.map (toString>>text>>List.singleton>>(td [])) (List.range 0 511))
+                          
+        tableStyle = style [ ("overflow-x", "scroll"), ("width", "700px") ]
+                     
+    in
+        table [] [ div [tableStyle] [tr [] buildHeaderList, tr [] (buildDataList mach.tape 0) ]]
+                      
 view model =
     div []
         [ textarea [ placeholder "Program", onInput NewContent] []
         , button [ onClick Run ] [ text "Run" ]
         , button [ onClick BuildGraph ] [ text "Visualise" ]            
         , text model.output
+        , buildTape model.machine
         ]
 
     

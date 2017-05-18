@@ -1,2 +1,2 @@
 all: elm/*
-	elm make elm/Elmscrew.elm --output=js/elmscrew.js
+	elm make elm/Main.elm --output=js/elmscrew.js
