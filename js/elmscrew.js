@@ -9001,12 +9001,20 @@ var _TartanLlama$elmscrew$Main$update = F2(
 		};
 		var _p11 = msg;
 		switch (_p11.ctor) {
-			case 'NewContent':
+			case 'NewProgram':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{program: _p11._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'NewInput':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{input: _p11._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'BuildGraph':
@@ -9058,13 +9066,13 @@ var _TartanLlama$elmscrew$Main$update = F2(
 				return executeInstruction(_TartanLlama$elmscrew$Elmscrew_Instruction$Input);
 		}
 	});
-var _TartanLlama$elmscrew$Main$Model = F3(
-	function (a, b, c) {
-		return {interp: a, output: b, program: c};
+var _TartanLlama$elmscrew$Main$Model = F4(
+	function (a, b, c, d) {
+		return {interp: a, output: b, input: c, program: d};
 	});
 var _TartanLlama$elmscrew$Main$init = {
 	ctor: '_Tuple2',
-	_0: A3(_TartanLlama$elmscrew$Main$Model, _elm_lang$core$Maybe$Nothing, '', ''),
+	_0: A4(_TartanLlama$elmscrew$Main$Model, _elm_lang$core$Maybe$Nothing, '', '', ''),
 	_1: _elm_lang$core$Platform_Cmd$none
 };
 var _TartanLlama$elmscrew$Main$Input = {ctor: 'Input'};
@@ -9122,10 +9130,29 @@ var _TartanLlama$elmscrew$Main$makeInterpreterButtons = A2(
 var _TartanLlama$elmscrew$Main$BuildGraph = {ctor: 'BuildGraph'};
 var _TartanLlama$elmscrew$Main$Step = {ctor: 'Step'};
 var _TartanLlama$elmscrew$Main$Run = {ctor: 'Run'};
-var _TartanLlama$elmscrew$Main$NewContent = function (a) {
-	return {ctor: 'NewContent', _0: a};
+var _TartanLlama$elmscrew$Main$NewInput = function (a) {
+	return {ctor: 'NewInput', _0: a};
+};
+var _TartanLlama$elmscrew$Main$NewProgram = function (a) {
+	return {ctor: 'NewProgram', _0: a};
 };
 var _TartanLlama$elmscrew$Main$view = function (model) {
+	var inputOutputStyle = function ($float) {
+		return _elm_lang$html$Html_Attributes$style(
+			{
+				ctor: '::',
+				_0: {ctor: '_Tuple2', _0: 'width', _1: '140px'},
+				_1: {
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'height', _1: '88px'},
+					_1: {
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'float', _1: $float},
+						_1: {ctor: '[]'}
+					}
+				}
+			});
+	};
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -9234,7 +9261,7 @@ var _TartanLlama$elmscrew$Main$view = function (model) {
 								_0: _elm_lang$html$Html_Attributes$placeholder('Program'),
 								_1: {
 									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onInput(_TartanLlama$elmscrew$Main$NewContent),
+									_0: _elm_lang$html$Html_Events$onInput(_TartanLlama$elmscrew$Main$NewProgram),
 									_1: {ctor: '[]'}
 								}
 							},
@@ -9242,64 +9269,98 @@ var _TartanLlama$elmscrew$Main$view = function (model) {
 						_1: {
 							ctor: '::',
 							_0: A2(
-								_elm_lang$html$Html$div,
-								{ctor: '[]'},
+								_elm_lang$html$Html$textarea,
 								{
 									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$button,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onClick(_TartanLlama$elmscrew$Main$Run),
-											_1: {ctor: '[]'}
-										},
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html$text('Run'),
-											_1: {ctor: '[]'}
-										}),
+									_0: _elm_lang$html$Html_Attributes$placeholder('Input'),
 									_1: {
 										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$button,
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html_Events$onClick(_TartanLlama$elmscrew$Main$Step),
-												_1: {ctor: '[]'}
-											},
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html$text('Step'),
-												_1: {ctor: '[]'}
-											}),
+										_0: inputOutputStyle('left'),
 										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Events$onInput(_TartanLlama$elmscrew$Main$NewInput),
+											_1: {ctor: '[]'}
+										}
+									}
+								},
+								{ctor: '[]'}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$textarea,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$placeholder('Output'),
+										_1: {
+											ctor: '::',
+											_0: inputOutputStyle('right'),
+											_1: {ctor: '[]'}
+										}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text(model.output),
+										_1: {ctor: '[]'}
+									}),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$div,
+										{ctor: '[]'},
+										{
 											ctor: '::',
 											_0: A2(
 												_elm_lang$html$Html$button,
 												{
 													ctor: '::',
-													_0: _elm_lang$html$Html_Events$onClick(_TartanLlama$elmscrew$Main$BuildGraph),
+													_0: _elm_lang$html$Html_Events$onClick(_TartanLlama$elmscrew$Main$Run),
 													_1: {ctor: '[]'}
 												},
 												{
 													ctor: '::',
-													_0: _elm_lang$html$Html$text('Visualise'),
+													_0: _elm_lang$html$Html$text('Run'),
 													_1: {ctor: '[]'}
 												}),
-											_1: {ctor: '[]'}
-										}
-									}
-								}),
-							_1: {
-								ctor: '::',
-								_0: _TartanLlama$elmscrew$Main$makeInterpreterButtons,
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html$text(model.output),
+											_1: {
+												ctor: '::',
+												_0: A2(
+													_elm_lang$html$Html$button,
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html_Events$onClick(_TartanLlama$elmscrew$Main$Step),
+														_1: {ctor: '[]'}
+													},
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html$text('Step'),
+														_1: {ctor: '[]'}
+													}),
+												_1: {
+													ctor: '::',
+													_0: A2(
+														_elm_lang$html$Html$button,
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html_Events$onClick(_TartanLlama$elmscrew$Main$BuildGraph),
+															_1: {ctor: '[]'}
+														},
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html$text('Visualise'),
+															_1: {ctor: '[]'}
+														}),
+													_1: {ctor: '[]'}
+												}
+											}
+										}),
 									_1: {
 										ctor: '::',
-										_0: _TartanLlama$elmscrew$Main$buildTape(model.interp),
-										_1: {ctor: '[]'}
+										_0: _TartanLlama$elmscrew$Main$makeInterpreterButtons,
+										_1: {
+											ctor: '::',
+											_0: _TartanLlama$elmscrew$Main$buildTape(model.interp),
+											_1: {ctor: '[]'}
+										}
 									}
 								}
 							}

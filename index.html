@@ -24,11 +24,11 @@
     var app = Elm.Main.embed(node);
 
     var network;
-    
+
     app.ports.setCurrentNode.subscribe(function(nodeId) {
         network.selectNodes(network.findNode(nodeId));
     });
-    
+
     app.ports.displayGraph.subscribe(function(data) {
         var nodes = new vis.DataSet(data[0]);
         var edges = new vis.DataSet(data[1]);
@@ -46,4 +46,3 @@
 
 
 </body>
-

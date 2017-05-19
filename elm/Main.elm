@@ -5,7 +5,7 @@ import Array exposing (Array)
 import Json.Encode exposing (int, list, object, string)
 import Platform.Cmd exposing (Cmd)
 import Dict
-   
+
 import Elmscrew.Machine as Machine exposing (Machine)
 import Elmscrew.Interpreter as Interpreter exposing (Interpreter)
 import Elmscrew.Arbor exposing (displayGraph,setCurrentNode)
@@ -20,15 +20,15 @@ main =
         , subscriptions = subscriptions
         }
 
-type alias Model = { interp : Maybe Interpreter, output : String, program : String}
+type alias Model = { interp : Maybe Interpreter, output : String, input : String, program : String}
 
 init : (Model, Cmd Msg)
-init = (Model Nothing "" "", Cmd.none)
+init = (Model Nothing "" "" "", Cmd.none)
 
-type Msg = NewContent String | Run | Step | BuildGraph
+type Msg = NewProgram String | NewInput String | Run | Step | BuildGraph
          | Right | Left | Inc | Dec | Output | Input
 
-           
+
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     let
@@ -36,7 +36,7 @@ update msg model =
             ({model | interp = Just interp,
                       output = model.output ++ (Maybe.withDefault "" <| Maybe.map String.fromChar output)}
             , setCurrentNode interp.pc)
-        
+
         handleStep result =
             case result of
                 Interpreter.Running newInterp output -> handleNewExecution newInterp output
@@ -54,7 +54,8 @@ update msg model =
     in
 
     case msg of
-        NewContent program -> ({model | program = program }, Cmd.none)
+        NewProgram program -> ({model | program = program }, Cmd.none)
+        NewInput input -> ({model | input = input }, Cmd.none)
         BuildGraph -> let parsedProg = (Array.toList (parse model.program)) in
             (model, displayGraph (list (generateProgramGraphNodes parsedProg 0),
                                   list (generateProgramGraphEdges parsedProg 0)))
@@ -87,15 +88,15 @@ generateProgramGraphNodes prog n =
 
 generateProgramGraphEdges : List Inst -> Int -> List Json.Encode.Value
 generateProgramGraphEdges prog n =
-    case prog of    
+    case prog of
         (x::y::xs) -> [object [ ("from", int n), ("to", int (n+1)) ]]
                       ++ (getLoopEdges x n)
                       ++ generateProgramGraphEdges (y::xs) (n+1)
-                          
+
         (x::y) -> (getLoopEdges x n) ++ (generateProgramGraphEdges (y) (n+1))
         _ -> [object [("from", string "start"),("to", int 0)],
               object [("from", int (n-1)),("to", string "end")]]
-    
+
 subscriptions : model -> Sub msg
 subscriptions model = Sub.none
 
@@ -115,12 +116,12 @@ buildTape interp =
 
         buildTdNode cursor n = td (nodeStyle cursor n) [n |> toString |> text]
         buildHeaderList cursor = (List.map (buildTdNode cursor) (List.range 0 511))
-                          
+
         tableStyle = style [ ("overflow-x", "scroll"), ("width", "700px") ]
 
         buildBlankTable = [tr [] (List.map (toString>>text>>List.singleton>>(td [])) (List.range 0 511))
                           ,tr [] (List.repeat 512 (td [] [text "0"]))]
-                     
+
     in
         case interp of
             Just interp ->
@@ -140,27 +141,29 @@ makeInterpreterButtons = div [] <|
                               (Input, ",")
                              ]
 
-view : Model -> Html Msg                             
+view : Model -> Html Msg
 view model =
+    let
+        inputOutputStyle float = style [("width", "140px"), ("height", "88px"), ("float", float)]
+    in
+
     div [style [("width", "700px"), ("margin", "auto"), ("text-align", "center")]]
         [ h1 [] [ text "Elmscrew" ]
         , h3 [] [ text "A "
-                , a [href "https://en.wikipedia.org/wiki/Brainfuck"] [text "Brainfuck"] 
+                , a [href "https://en.wikipedia.org/wiki/Brainfuck"] [text "Brainfuck"]
                 , text " interpreter and debugger written in "
                 , a [href "http://elm-lang.org/"] [text "Elm"]
                 ]
         , h5 [] [ text "By "
-                , a [href "https://blog.tartanllama.xyz/"] [text "TartanLlama"] 
+                , a [href "https://blog.tartanllama.xyz/"] [text "TartanLlama"]
                 ]
-        , textarea [ placeholder "Program", onInput NewContent] []
+        , textarea [ placeholder "Program", onInput NewProgram] []
+        , textarea [ placeholder "Input", inputOutputStyle "left", onInput NewInput ] []
+        , textarea [ placeholder "Output", inputOutputStyle "right"] [ text model.output ]
         , div [] [ button [ onClick Run ] [ text "Run" ]
-                 , button [ onClick Step ] [ text "Step" ]            
+                 , button [ onClick Step ] [ text "Step" ]
                  , button [ onClick BuildGraph ] [ text "Visualise" ]
                  ]
-        , makeInterpreterButtons 
-        , text model.output
+        , makeInterpreterButtons
         , buildTape model.interp
         ]
-
-    
-
