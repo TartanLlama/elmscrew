@@ -8,7 +8,8 @@ import Dict
 import Elmscrew.Machine as Machine exposing (Machine)
 import Elmscrew.Interpreter as Interpreter exposing (Interpreter)
 import Elmscrew.Arbor exposing (displayGraph)
-import Elmscrew.Parser as Parser exposing (Inst(..), parse)
+import Elmscrew.Parser as Parser exposing (parse)
+import Elmscrew.Instruction as Instruction exposing (Inst)
 
 main =
     Html.program
@@ -18,36 +19,69 @@ main =
         , subscriptions = subscriptions
         }
 
-type alias Model = { machine : Machine, output : String, program : String}
+type alias Model = { interp : Maybe Interpreter, output : String, program : String}
 
 init : (Model, Cmd Msg)
-init = (Model Machine.init "" "", Cmd.none)
+init = (Model Nothing "" "", Cmd.none)
 
-type Msg = NewContent String | Run | BuildGraph
+type Msg = NewContent String | Run | Step | BuildGraph
+         | Right | Left | Inc | Dec | Output | Input
 
+           
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
+    let
+        handleNewExecution interp output =
+            ({model | interp = Just interp,
+                      output = model.output ++ (Maybe.withDefault "" <| Maybe.map String.fromChar output)}
+            , Cmd.none)
+        
+        handleStep result =
+            case result of
+                Interpreter.Running newInterp output -> handleNewExecution newInterp output
+                Interpreter.Complete newInterp -> ({model | interp = Just newInterp}, Cmd.none)
+
+        maybeInitInterpreter =
+            case model.interp of
+                Just interp -> interp
+                Nothing -> Interpreter.initWithStr model.program
+
+        executeInstruction inst =
+            let (newInterp, newOutput) = Interpreter.execute maybeInitInterpreter inst in
+            handleNewExecution newInterp newOutput
+    in
+
     case msg of
         NewContent program -> ({model | program = program }, Cmd.none)
         BuildGraph -> let parsedProg = (Array.toList (parse model.program)) in
             (model, displayGraph (list (generateProgramGraphNodes parsedProg 0),
                                   list (generateProgramGraphEdges parsedProg 0)))
-        run ->
+        Run ->
             let (newInterp, newOutput) =
-                    Interpreter.runToCompletion 0 "" (Interpreter.initWithStr (\x->'\0') model.program)
+                    Interpreter.runToCompletion "" (Interpreter.initWithStr model.program)
             in
-                ({model | output = newOutput, machine = newInterp.machine}, Cmd.none)
+                ({model | output = newOutput, interp = Just newInterp}, Cmd.none)
+
+        Step -> handleStep <| Interpreter.step maybeInitInterpreter
+        Right -> executeInstruction Instruction.Right
+        Left -> executeInstruction Instruction.Left
+        Inc -> executeInstruction Instruction.Inc
+        Dec -> executeInstruction Instruction.Dec
+        Output -> executeInstruction Instruction.Output
+        Input -> executeInstruction Instruction.Input
+        
+        
 
 getLoopEdges : Inst -> Int -> List Json.Encode.Value
 getLoopEdges inst n = case inst of
-                        Jump i -> [object [ ("from", int n), ("to", int i) ]]
+                        Instruction.Jump i -> [object [ ("from", int n), ("to", int i) ]]
                         _ -> []
 
 generateProgramGraphNodes : List Inst -> Int -> List Json.Encode.Value
 generateProgramGraphNodes prog n =
     case prog of
         (x::xs) -> object [ ("id", int n),
-                            ("label", string <| String.fromChar <| Parser.toChar x) ]
+                            ("label", string <| String.fromChar <| Instruction.toChar x) ]
                    :: generateProgramGraphNodes xs (n+1)
         _ -> []
 
@@ -64,7 +98,8 @@ generateProgramGraphEdges prog n =
 subscriptions : model -> Sub msg
 subscriptions model = Sub.none
 
-buildTape mach =
+buildTape : Maybe Interpreter -> Html msg
+buildTape interp =
     let
         getData tape n = case (Dict.get n tape) of
                    Just data -> data
@@ -79,15 +114,32 @@ buildTape mach =
         tableStyle = style [ ("overflow-x", "scroll"), ("width", "700px") ]
                      
     in
-        table [] [ div [tableStyle] [tr [] buildHeaderList, tr [] (buildDataList mach.tape 0) ]]
-                      
+        case interp of
+            Just interp ->
+                table [] [ div [tableStyle] [tr [] buildHeaderList, tr [] (buildDataList interp.machine.tape 0) ]]
+            Nothing -> div[][]
+
+makeInterpreterButtons = div [] <|
+                         List.map (\x -> button [ onClick <| Tuple.first x] [ text <| Tuple.second x])
+                             [
+                              (Right, ">"),
+                              (Left, "<"),
+                              (Inc, "+"),
+                              (Dec, "-"),
+                              (Output, "."),
+                              (Input, ",")
+                             ]
+
+view : Model -> Html Msg                             
 view model =
     div []
         [ textarea [ placeholder "Program", onInput NewContent] []
         , button [ onClick Run ] [ text "Run" ]
-        , button [ onClick BuildGraph ] [ text "Visualise" ]            
+        , button [ onClick Step ] [ text "Step" ]            
+        , button [ onClick BuildGraph ] [ text "Visualise" ]
+        , makeInterpreterButtons 
         , text model.output
-        , buildTape model.machine
+        , buildTape model.interp
         ]
 
     
