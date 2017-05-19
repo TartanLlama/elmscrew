@@ -5899,65 +5899,93 @@ var _TartanLlama$elmscrew$Elmscrew_Machine$left = function (machine) {
 	return A2(_TartanLlama$elmscrew$Elmscrew_Machine$Machine, machine.tape, machine.position - 1);
 };
 
-var _TartanLlama$elmscrew$Elmscrew_Interpreter$execute = F2(
-	function (interp, inst) {
+var _TartanLlama$elmscrew$Elmscrew_Interpreter$execute = F3(
+	function (interp, inst, input) {
 		var _p0 = inst;
 		switch (_p0.ctor) {
 			case 'Right':
 				return {
-					ctor: '_Tuple2',
+					ctor: '_Tuple3',
 					_0: _elm_lang$core$Native_Utils.update(
 						interp,
 						{
 							machine: _TartanLlama$elmscrew$Elmscrew_Machine$right(interp.machine)
 						}),
-					_1: _elm_lang$core$Maybe$Nothing
+					_1: input,
+					_2: _elm_lang$core$Maybe$Nothing
 				};
 			case 'Left':
 				return {
-					ctor: '_Tuple2',
+					ctor: '_Tuple3',
 					_0: _elm_lang$core$Native_Utils.update(
 						interp,
 						{
 							machine: _TartanLlama$elmscrew$Elmscrew_Machine$left(interp.machine)
 						}),
-					_1: _elm_lang$core$Maybe$Nothing
+					_1: input,
+					_2: _elm_lang$core$Maybe$Nothing
 				};
 			case 'Inc':
 				return {
-					ctor: '_Tuple2',
+					ctor: '_Tuple3',
 					_0: _elm_lang$core$Native_Utils.update(
 						interp,
 						{
 							machine: _TartanLlama$elmscrew$Elmscrew_Machine$incr(interp.machine)
 						}),
-					_1: _elm_lang$core$Maybe$Nothing
+					_1: input,
+					_2: _elm_lang$core$Maybe$Nothing
 				};
 			case 'Dec':
 				return {
-					ctor: '_Tuple2',
+					ctor: '_Tuple3',
 					_0: _elm_lang$core$Native_Utils.update(
 						interp,
 						{
 							machine: _TartanLlama$elmscrew$Elmscrew_Machine$decr(interp.machine)
 						}),
-					_1: _elm_lang$core$Maybe$Nothing
+					_1: input,
+					_2: _elm_lang$core$Maybe$Nothing
 				};
 			case 'Output':
 				return {
-					ctor: '_Tuple2',
+					ctor: '_Tuple3',
 					_0: interp,
-					_1: _elm_lang$core$Maybe$Just(
+					_1: input,
+					_2: _elm_lang$core$Maybe$Just(
 						_elm_lang$core$Char$fromCode(
 							_TartanLlama$elmscrew$Elmscrew_Machine$get(interp.machine)))
 				};
 			case 'Input':
-				return {ctor: '_Tuple2', _0: interp, _1: _elm_lang$core$Maybe$Nothing};
+				var _p1 = _elm_lang$core$String$uncons(input);
+				if (_p1.ctor === 'Just') {
+					return {
+						ctor: '_Tuple3',
+						_0: _elm_lang$core$Native_Utils.update(
+							interp,
+							{
+								machine: A2(
+									_TartanLlama$elmscrew$Elmscrew_Machine$set,
+									interp.machine,
+									_elm_lang$core$Char$toCode(_p1._0._0))
+							}),
+						_1: _p1._0._1,
+						_2: _elm_lang$core$Maybe$Nothing
+					};
+				} else {
+					return _elm_lang$core$Native_Utils.crashCase(
+						'Elmscrew.Interpreter',
+						{
+							start: {line: 42, column: 18},
+							end: {line: 46, column: 56}
+						},
+						_p1)('Not enough input');
+				}
 			case 'JumpMarker':
-				return {ctor: '_Tuple2', _0: interp, _1: _elm_lang$core$Maybe$Nothing};
+				return {ctor: '_Tuple3', _0: interp, _1: input, _2: _elm_lang$core$Maybe$Nothing};
 			default:
 				return {
-					ctor: '_Tuple2',
+					ctor: '_Tuple3',
 					_0: _elm_lang$core$Native_Utils.update(
 						interp,
 						{
@@ -5965,7 +5993,8 @@ var _TartanLlama$elmscrew$Elmscrew_Interpreter$execute = F2(
 								_TartanLlama$elmscrew$Elmscrew_Machine$get(interp.machine),
 								0) > 0) ? _p0._0 : (interp.pc + 1)
 						}),
-					_1: _elm_lang$core$Maybe$Nothing
+					_1: input,
+					_2: _elm_lang$core$Maybe$Nothing
 				};
 		}
 	});
@@ -5984,56 +6013,61 @@ var _TartanLlama$elmscrew$Elmscrew_Interpreter$initWithStr = function (str) {
 var _TartanLlama$elmscrew$Elmscrew_Interpreter$Complete = function (a) {
 	return {ctor: 'Complete', _0: a};
 };
-var _TartanLlama$elmscrew$Elmscrew_Interpreter$Running = F2(
-	function (a, b) {
-		return {ctor: 'Running', _0: a, _1: b};
+var _TartanLlama$elmscrew$Elmscrew_Interpreter$Running = F3(
+	function (a, b, c) {
+		return {ctor: 'Running', _0: a, _1: b, _2: c};
 	});
-var _TartanLlama$elmscrew$Elmscrew_Interpreter$step = function (interp) {
-	var inst = A2(_elm_lang$core$Array$get, interp.pc, interp.instructions);
-	var _p1 = inst;
-	if (_p1.ctor === 'Just') {
-		var _p4 = _p1._0;
-		var _p2 = A2(_TartanLlama$elmscrew$Elmscrew_Interpreter$execute, interp, _p4);
-		var newInterp = _p2._0;
-		var newOutput = _p2._1;
-		var _p3 = _p4;
-		if (_p3.ctor === 'Jump') {
-			return A2(_TartanLlama$elmscrew$Elmscrew_Interpreter$Running, newInterp, newOutput);
+var _TartanLlama$elmscrew$Elmscrew_Interpreter$step = F2(
+	function (interp, input) {
+		var inst = A2(_elm_lang$core$Array$get, interp.pc, interp.instructions);
+		var _p3 = inst;
+		if (_p3.ctor === 'Just') {
+			var _p6 = _p3._0;
+			var _p4 = A3(_TartanLlama$elmscrew$Elmscrew_Interpreter$execute, interp, _p6, input);
+			var newInterp = _p4._0;
+			var newInput = _p4._1;
+			var newOutput = _p4._2;
+			var _p5 = _p6;
+			if (_p5.ctor === 'Jump') {
+				return A3(_TartanLlama$elmscrew$Elmscrew_Interpreter$Running, newInterp, newInput, newOutput);
+			} else {
+				return A3(
+					_TartanLlama$elmscrew$Elmscrew_Interpreter$Running,
+					_elm_lang$core$Native_Utils.update(
+						newInterp,
+						{pc: newInterp.pc + 1}),
+					newInput,
+					newOutput);
+			}
 		} else {
-			return A2(
-				_TartanLlama$elmscrew$Elmscrew_Interpreter$Running,
-				_elm_lang$core$Native_Utils.update(
-					newInterp,
-					{pc: newInterp.pc + 1}),
-				newOutput);
+			return _TartanLlama$elmscrew$Elmscrew_Interpreter$Complete(interp);
 		}
-	} else {
-		return _TartanLlama$elmscrew$Elmscrew_Interpreter$Complete(interp);
-	}
-};
-var _TartanLlama$elmscrew$Elmscrew_Interpreter$runToCompletion = F2(
-	function (output, interp) {
+	});
+var _TartanLlama$elmscrew$Elmscrew_Interpreter$runToCompletion = F3(
+	function (output, interp, input) {
 		runToCompletion:
 		while (true) {
-			var _p5 = _TartanLlama$elmscrew$Elmscrew_Interpreter$step(interp);
-			if (_p5.ctor === 'Running') {
+			var _p7 = A2(_TartanLlama$elmscrew$Elmscrew_Interpreter$step, interp, input);
+			if (_p7.ctor === 'Running') {
 				var newOutput = function () {
-					var _p6 = _p5._1;
-					if (_p6.ctor === 'Just') {
-						return A2(_elm_lang$core$String$cons, _p6._0, output);
+					var _p8 = _p7._2;
+					if (_p8.ctor === 'Just') {
+						return A2(_elm_lang$core$String$cons, _p8._0, output);
 					} else {
 						return output;
 					}
 				}();
-				var _v5 = newOutput,
-					_v6 = _p5._0;
-				output = _v5;
-				interp = _v6;
+				var _v6 = newOutput,
+					_v7 = _p7._0,
+					_v8 = _p7._1;
+				output = _v6;
+				interp = _v7;
+				input = _v8;
 				continue runToCompletion;
 			} else {
 				return {
 					ctor: '_Tuple2',
-					_0: _p5._0,
+					_0: _p7._0,
 					_1: _elm_lang$core$String$reverse(output)
 				};
 			}
@@ -8979,14 +9013,15 @@ var _TartanLlama$elmscrew$Main$update = F2(
 				return _TartanLlama$elmscrew$Elmscrew_Interpreter$initWithStr(model.program);
 			}
 		}();
-		var handleNewExecution = F2(
-			function (interp, output) {
+		var handleNewExecution = F3(
+			function (interp, input, output) {
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
 							interp: _elm_lang$core$Maybe$Just(interp),
+							input: input,
 							output: A2(
 								_elm_lang$core$Basics_ops['++'],
 								model.output,
@@ -9001,7 +9036,7 @@ var _TartanLlama$elmscrew$Main$update = F2(
 		var handleStep = function (result) {
 			var _p8 = result;
 			if (_p8.ctor === 'Running') {
-				return A2(handleNewExecution, _p8._0, _p8._1);
+				return A3(handleNewExecution, _p8._0, _p8._1, _p8._2);
 			} else {
 				var _p9 = _p8._0;
 				return {
@@ -9016,10 +9051,11 @@ var _TartanLlama$elmscrew$Main$update = F2(
 			}
 		};
 		var executeInstruction = function (inst) {
-			var _p10 = A2(_TartanLlama$elmscrew$Elmscrew_Interpreter$execute, maybeInitInterpreter, inst);
+			var _p10 = A3(_TartanLlama$elmscrew$Elmscrew_Interpreter$execute, maybeInitInterpreter, inst, model.input);
 			var newInterp = _p10._0;
-			var newOutput = _p10._1;
-			return A2(handleNewExecution, newInterp, newOutput);
+			var newInput = _p10._1;
+			var newOutput = _p10._2;
+			return A3(handleNewExecution, newInterp, newInput, newOutput);
 		};
 		var _p11 = msg;
 		switch (_p11.ctor) {
@@ -9052,10 +9088,11 @@ var _TartanLlama$elmscrew$Main$update = F2(
 			case 'Reset':
 				return _TartanLlama$elmscrew$Main$reset(model);
 			case 'Run':
-				var _p13 = A2(
+				var _p13 = A3(
 					_TartanLlama$elmscrew$Elmscrew_Interpreter$runToCompletion,
 					'',
-					_TartanLlama$elmscrew$Elmscrew_Interpreter$initWithStr(model.program));
+					_TartanLlama$elmscrew$Elmscrew_Interpreter$initWithStr(model.program),
+					model.input);
 				var newInterp = _p13._0;
 				var newOutput = _p13._1;
 				return {
@@ -9070,7 +9107,7 @@ var _TartanLlama$elmscrew$Main$update = F2(
 				};
 			case 'Step':
 				return handleStep(
-					_TartanLlama$elmscrew$Elmscrew_Interpreter$step(maybeInitInterpreter));
+					A2(_TartanLlama$elmscrew$Elmscrew_Interpreter$step, maybeInitInterpreter, model.input));
 			case 'Right':
 				return executeInstruction(_TartanLlama$elmscrew$Elmscrew_Instruction$Right);
 			case 'Left':
@@ -9293,7 +9330,11 @@ var _TartanLlama$elmscrew$Main$view = function (model) {
 										}
 									}
 								},
-								{ctor: '[]'}),
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(model.input),
+									_1: {ctor: '[]'}
+								}),
 							_1: {
 								ctor: '::',
 								_0: A2(

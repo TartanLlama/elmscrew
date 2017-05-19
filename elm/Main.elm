@@ -20,7 +20,10 @@ main =
         , subscriptions = subscriptions
         }
 
-type alias Model = { interp : Maybe Interpreter, output : String, input : String, program : String}
+type alias Model = { interp : Maybe Interpreter
+                   , output : String
+                   , input : String
+                   , program : String}
 
 init : (Model, Cmd Msg)
 init = (Model Nothing "" "" "", Cmd.none)
@@ -42,14 +45,15 @@ setCurrentNode interp =
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     let
-        handleNewExecution interp output =
+        handleNewExecution interp input output =
             ({model | interp = Just interp,
+                      input = input,
                       output = model.output ++ (Maybe.withDefault "" <| Maybe.map String.fromChar output)}
             , setCurrentNode interp)
 
         handleStep result =
             case result of
-                Interpreter.Running newInterp output -> handleNewExecution newInterp output
+                Interpreter.Running newInterp newInput output -> handleNewExecution newInterp newInput output
                 Interpreter.Complete newInterp -> ({model | interp = Just newInterp},
                                                    setCurrentNode newInterp)
 
@@ -59,8 +63,8 @@ update msg model =
                 Nothing -> Interpreter.initWithStr model.program
 
         executeInstruction inst =
-            let (newInterp, newOutput) = Interpreter.execute maybeInitInterpreter inst in
-            handleNewExecution newInterp newOutput
+            let (newInterp, newInput, newOutput) = Interpreter.execute maybeInitInterpreter inst model.input in
+            handleNewExecution newInterp newInput newOutput
     in
 
     case msg of
@@ -72,11 +76,11 @@ update msg model =
         Reset -> reset model
         Run ->
             let (newInterp, newOutput) =
-                    Interpreter.runToCompletion "" (Interpreter.initWithStr model.program)
+                    Interpreter.runToCompletion "" (Interpreter.initWithStr model.program) model.input
             in
                 ({model | output = newOutput, interp = Just newInterp}, setCurrentNode newInterp)
 
-        Step -> handleStep <| Interpreter.step maybeInitInterpreter
+        Step -> handleStep <| Interpreter.step maybeInitInterpreter model.input
         Right -> executeInstruction Instruction.Right
         Left -> executeInstruction Instruction.Left
         Inc -> executeInstruction Instruction.Inc
@@ -169,7 +173,7 @@ view model =
                 , a [href "https://blog.tartanllama.xyz/"] [text "TartanLlama"]
                 ]
         , textarea [ placeholder "Program", onInput NewProgram] []
-        , textarea [ placeholder "Input", inputOutputStyle "left", onInput NewInput ] []
+        , textarea [ placeholder "Input", inputOutputStyle "left", onInput NewInput ] [ text model.input ]
         , textarea [ placeholder "Output", inputOutputStyle "right"] [ text model.output ]
         , div [] [ button [ onClick Run ] [ text "Run" ]
                  , button [ onClick Step ] [ text "Step" ]
