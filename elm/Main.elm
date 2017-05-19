@@ -25,7 +25,10 @@ type alias Model = { interp : Maybe Interpreter, output : String, input : String
 init : (Model, Cmd Msg)
 init = (Model Nothing "" "" "", Cmd.none)
 
-type Msg = NewProgram String | NewInput String | Run | Step | BuildGraph
+reset : Model -> (Model, Cmd Msg)
+reset model = (Model Nothing "" "" model.program, Cmd.none)
+
+type Msg = NewProgram String | NewInput String | Run | Step | Reset
          | Right | Left | Inc | Dec | Output | Input
 
 
@@ -54,11 +57,12 @@ update msg model =
     in
 
     case msg of
-        NewProgram program -> ({model | program = program }, Cmd.none)
+        NewProgram program -> let parsedProg = (Array.toList (parse program)) in
+            ({model | program = program }, displayGraph (list (generateProgramGraphNodes parsedProg 0),
+                                                         list (generateProgramGraphEdges parsedProg 0)))
+
         NewInput input -> ({model | input = input }, Cmd.none)
-        BuildGraph -> let parsedProg = (Array.toList (parse model.program)) in
-            (model, displayGraph (list (generateProgramGraphNodes parsedProg 0),
-                                  list (generateProgramGraphEdges parsedProg 0)))
+        Reset -> reset model
         Run ->
             let (newInterp, newOutput) =
                     Interpreter.runToCompletion "" (Interpreter.initWithStr model.program)
@@ -162,7 +166,7 @@ view model =
         , textarea [ placeholder "Output", inputOutputStyle "right"] [ text model.output ]
         , div [] [ button [ onClick Run ] [ text "Run" ]
                  , button [ onClick Step ] [ text "Step" ]
-                 , button [ onClick BuildGraph ] [ text "Visualise" ]
+                 , button [ onClick Reset ] [ text "Reset" ]
                  ]
         , makeInterpreterButtons
         , buildTape model.interp

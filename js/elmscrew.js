@@ -8947,6 +8947,22 @@ var _TartanLlama$elmscrew$Main$generateProgramGraphEdges = F2(
 			};
 		}
 	});
+var _TartanLlama$elmscrew$Main$Model = F4(
+	function (a, b, c, d) {
+		return {interp: a, output: b, input: c, program: d};
+	});
+var _TartanLlama$elmscrew$Main$init = {
+	ctor: '_Tuple2',
+	_0: A4(_TartanLlama$elmscrew$Main$Model, _elm_lang$core$Maybe$Nothing, '', '', ''),
+	_1: _elm_lang$core$Platform_Cmd$none
+};
+var _TartanLlama$elmscrew$Main$reset = function (model) {
+	return {
+		ctor: '_Tuple2',
+		_0: A4(_TartanLlama$elmscrew$Main$Model, _elm_lang$core$Maybe$Nothing, '', '', model.program),
+		_1: _elm_lang$core$Platform_Cmd$none
+	};
+};
 var _TartanLlama$elmscrew$Main$update = F2(
 	function (msg, model) {
 		var maybeInitInterpreter = function () {
@@ -9002,27 +9018,14 @@ var _TartanLlama$elmscrew$Main$update = F2(
 		var _p11 = msg;
 		switch (_p11.ctor) {
 			case 'NewProgram':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{program: _p11._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'NewInput':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{input: _p11._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'BuildGraph':
+				var _p12 = _p11._0;
 				var parsedProg = _elm_lang$core$Array$toList(
-					_TartanLlama$elmscrew$Elmscrew_Parser$parse(model.program));
+					_TartanLlama$elmscrew$Elmscrew_Parser$parse(_p12));
 				return {
 					ctor: '_Tuple2',
-					_0: model,
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{program: _p12}),
 					_1: _TartanLlama$elmscrew$Elmscrew_Arbor$displayGraph(
 						{
 							ctor: '_Tuple2',
@@ -9032,13 +9035,23 @@ var _TartanLlama$elmscrew$Main$update = F2(
 								A2(_TartanLlama$elmscrew$Main$generateProgramGraphEdges, parsedProg, 0))
 						})
 				};
+			case 'NewInput':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{input: _p11._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'Reset':
+				return _TartanLlama$elmscrew$Main$reset(model);
 			case 'Run':
-				var _p12 = A2(
+				var _p13 = A2(
 					_TartanLlama$elmscrew$Elmscrew_Interpreter$runToCompletion,
 					'',
 					_TartanLlama$elmscrew$Elmscrew_Interpreter$initWithStr(model.program));
-				var newInterp = _p12._0;
-				var newOutput = _p12._1;
+				var newInterp = _p13._0;
+				var newOutput = _p13._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -9066,15 +9079,6 @@ var _TartanLlama$elmscrew$Main$update = F2(
 				return executeInstruction(_TartanLlama$elmscrew$Elmscrew_Instruction$Input);
 		}
 	});
-var _TartanLlama$elmscrew$Main$Model = F4(
-	function (a, b, c, d) {
-		return {interp: a, output: b, input: c, program: d};
-	});
-var _TartanLlama$elmscrew$Main$init = {
-	ctor: '_Tuple2',
-	_0: A4(_TartanLlama$elmscrew$Main$Model, _elm_lang$core$Maybe$Nothing, '', '', ''),
-	_1: _elm_lang$core$Platform_Cmd$none
-};
 var _TartanLlama$elmscrew$Main$Input = {ctor: 'Input'};
 var _TartanLlama$elmscrew$Main$Output = {ctor: 'Output'};
 var _TartanLlama$elmscrew$Main$Dec = {ctor: 'Dec'};
@@ -9127,7 +9131,7 @@ var _TartanLlama$elmscrew$Main$makeInterpreterButtons = A2(
 				}
 			}
 		}));
-var _TartanLlama$elmscrew$Main$BuildGraph = {ctor: 'BuildGraph'};
+var _TartanLlama$elmscrew$Main$Reset = {ctor: 'Reset'};
 var _TartanLlama$elmscrew$Main$Step = {ctor: 'Step'};
 var _TartanLlama$elmscrew$Main$Run = {ctor: 'Run'};
 var _TartanLlama$elmscrew$Main$NewInput = function (a) {
@@ -9341,12 +9345,12 @@ var _TartanLlama$elmscrew$Main$view = function (model) {
 														_elm_lang$html$Html$button,
 														{
 															ctor: '::',
-															_0: _elm_lang$html$Html_Events$onClick(_TartanLlama$elmscrew$Main$BuildGraph),
+															_0: _elm_lang$html$Html_Events$onClick(_TartanLlama$elmscrew$Main$Reset),
 															_1: {ctor: '[]'}
 														},
 														{
 															ctor: '::',
-															_0: _elm_lang$html$Html$text('Visualise'),
+															_0: _elm_lang$html$Html$text('Reset'),
 															_1: {ctor: '[]'}
 														}),
 													_1: {ctor: '[]'}
