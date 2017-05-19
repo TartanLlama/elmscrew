@@ -1,5 +1,5 @@
-import Html exposing (Html,div,text,button,textarea,td,table,tr)
-import Html.Attributes exposing (placeholder,style)
+import Html exposing (Html,div,text,button,textarea,td,table,tr,h1,h3,h5,a)
+import Html.Attributes exposing (placeholder,style,href)
 import Html.Events exposing (onInput, onClick)
 import Array exposing (Array)
 import Json.Encode exposing (int, list, object, string)
@@ -117,6 +117,9 @@ buildTape interp =
         buildHeaderList cursor = (List.map (buildTdNode cursor) (List.range 0 511))
                           
         tableStyle = style [ ("overflow-x", "scroll"), ("width", "700px") ]
+
+        buildBlankTable = [tr [] (List.map (toString>>text>>List.singleton>>(td [])) (List.range 0 511))
+                          ,tr [] (List.repeat 512 (td [] [text "0"]))]
                      
     in
         case interp of
@@ -124,7 +127,7 @@ buildTape interp =
                 table [] [ div [tableStyle] [tr [] (buildHeaderList interp.machine.position)
                                             ,tr [] (buildDataList interp.machine.tape interp.machine.position 0) ]
                          ]
-            Nothing -> div[][]
+            Nothing -> table [] [ div [tableStyle] buildBlankTable ]
 
 makeInterpreterButtons = div [] <|
                          List.map (\x -> button [ onClick <| Tuple.first x] [ text <| Tuple.second x])
@@ -139,11 +142,21 @@ makeInterpreterButtons = div [] <|
 
 view : Model -> Html Msg                             
 view model =
-    div []
-        [ textarea [ placeholder "Program", onInput NewContent] []
-        , button [ onClick Run ] [ text "Run" ]
-        , button [ onClick Step ] [ text "Step" ]            
-        , button [ onClick BuildGraph ] [ text "Visualise" ]
+    div [style [("width", "700px"), ("margin", "auto"), ("text-align", "center")]]
+        [ h1 [] [ text "Elmscrew" ]
+        , h3 [] [ text "A "
+                , a [href "https://en.wikipedia.org/wiki/Brainfuck"] [text "Brainfuck"] 
+                , text " interpreter and debugger written in "
+                , a [href "http://elm-lang.org/"] [text "Elm"]
+                ]
+        , h5 [] [ text "By "
+                , a [href "https://blog.tartanllama.xyz/"] [text "TartanLlama"] 
+                ]
+        , textarea [ placeholder "Program", onInput NewContent] []
+        , div [] [ button [ onClick Run ] [ text "Run" ]
+                 , button [ onClick Step ] [ text "Step" ]            
+                 , button [ onClick BuildGraph ] [ text "Visualise" ]
+                 ]
         , makeInterpreterButtons 
         , text model.output
         , buildTape model.interp

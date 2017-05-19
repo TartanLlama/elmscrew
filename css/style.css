@@ -1,0 +1,13 @@
+td:first-child {
+    padding-left: 1.5rem;
+}
+
+#viewport {
+    width: 700px;
+    height: 700px;
+}
+
+#container {
+    margin: auto;
+    width: 700px;
+}

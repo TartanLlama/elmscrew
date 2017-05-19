@@ -8607,6 +8607,41 @@ var _elm_lang$html$Html_Events$Options = F2(
 	});
 
 var _TartanLlama$elmscrew$Main$buildTape = function (interp) {
+	var buildBlankTable = {
+		ctor: '::',
+		_0: A2(
+			_elm_lang$html$Html$tr,
+			{ctor: '[]'},
+			A2(
+				_elm_lang$core$List$map,
+				function (_p0) {
+					return A2(
+						_elm_lang$html$Html$td,
+						{ctor: '[]'},
+						_elm_lang$core$List$singleton(
+							_elm_lang$html$Html$text(
+								_elm_lang$core$Basics$toString(_p0))));
+				},
+				A2(_elm_lang$core$List$range, 0, 511))),
+		_1: {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$tr,
+				{ctor: '[]'},
+				A2(
+					_elm_lang$core$List$repeat,
+					512,
+					A2(
+						_elm_lang$html$Html$td,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('0'),
+							_1: {ctor: '[]'}
+						}))),
+			_1: {ctor: '[]'}
+		}
+	};
 	var tableStyle = _elm_lang$html$Html_Attributes$style(
 		{
 			ctor: '::',
@@ -8655,9 +8690,9 @@ var _TartanLlama$elmscrew$Main$buildTape = function (interp) {
 	};
 	var getData = F2(
 		function (tape, n) {
-			var _p0 = A2(_elm_lang$core$Dict$get, n, tape);
-			if (_p0.ctor === 'Just') {
-				return _p0._0;
+			var _p1 = A2(_elm_lang$core$Dict$get, n, tape);
+			if (_p1.ctor === 'Just') {
+				return _p1._0;
 			} else {
 				return 0;
 			}
@@ -8679,9 +8714,9 @@ var _TartanLlama$elmscrew$Main$buildTape = function (interp) {
 				_1: A3(buildDataList, tape, cursor, n + 1)
 			};
 		});
-	var _p1 = interp;
-	if (_p1.ctor === 'Just') {
-		var _p2 = _p1._0;
+	var _p2 = interp;
+	if (_p2.ctor === 'Just') {
+		var _p3 = _p2._0;
 		return A2(
 			_elm_lang$html$Html$table,
 			{ctor: '[]'},
@@ -8699,13 +8734,13 @@ var _TartanLlama$elmscrew$Main$buildTape = function (interp) {
 						_0: A2(
 							_elm_lang$html$Html$tr,
 							{ctor: '[]'},
-							buildHeaderList(_p2.machine.position)),
+							buildHeaderList(_p3.machine.position)),
 						_1: {
 							ctor: '::',
 							_0: A2(
 								_elm_lang$html$Html$tr,
 								{ctor: '[]'},
-								A3(buildDataList, _p2.machine.tape, _p2.machine.position, 0)),
+								A3(buildDataList, _p3.machine.tape, _p3.machine.position, 0)),
 							_1: {ctor: '[]'}
 						}
 					}),
@@ -8713,9 +8748,20 @@ var _TartanLlama$elmscrew$Main$buildTape = function (interp) {
 			});
 	} else {
 		return A2(
-			_elm_lang$html$Html$div,
+			_elm_lang$html$Html$table,
 			{ctor: '[]'},
-			{ctor: '[]'});
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: tableStyle,
+						_1: {ctor: '[]'}
+					},
+					buildBlankTable),
+				_1: {ctor: '[]'}
+			});
 	}
 };
 var _TartanLlama$elmscrew$Main$subscriptions = function (model) {
@@ -8723,8 +8769,8 @@ var _TartanLlama$elmscrew$Main$subscriptions = function (model) {
 };
 var _TartanLlama$elmscrew$Main$generateProgramGraphNodes = F2(
 	function (prog, n) {
-		var _p3 = prog;
-		if (_p3.ctor === '::') {
+		var _p4 = prog;
+		if (_p4.ctor === '::') {
 			return {
 				ctor: '::',
 				_0: _elm_lang$core$Json_Encode$object(
@@ -8742,12 +8788,12 @@ var _TartanLlama$elmscrew$Main$generateProgramGraphNodes = F2(
 								_0: 'label',
 								_1: _elm_lang$core$Json_Encode$string(
 									_elm_lang$core$String$fromChar(
-										_TartanLlama$elmscrew$Elmscrew_Instruction$toChar(_p3._0)))
+										_TartanLlama$elmscrew$Elmscrew_Instruction$toChar(_p4._0)))
 							},
 							_1: {ctor: '[]'}
 						}
 					}),
-				_1: A2(_TartanLlama$elmscrew$Main$generateProgramGraphNodes, _p3._1, n + 1)
+				_1: A2(_TartanLlama$elmscrew$Main$generateProgramGraphNodes, _p4._1, n + 1)
 			};
 		} else {
 			return A2(
@@ -8785,8 +8831,8 @@ var _TartanLlama$elmscrew$Main$generateProgramGraphNodes = F2(
 	});
 var _TartanLlama$elmscrew$Main$getLoopEdges = F2(
 	function (inst, n) {
-		var _p4 = inst;
-		if (_p4.ctor === 'Jump') {
+		var _p5 = inst;
+		if (_p5.ctor === 'Jump') {
 			return {
 				ctor: '::',
 				_0: _elm_lang$core$Json_Encode$object(
@@ -8802,7 +8848,7 @@ var _TartanLlama$elmscrew$Main$getLoopEdges = F2(
 							_0: {
 								ctor: '_Tuple2',
 								_0: 'to',
-								_1: _elm_lang$core$Json_Encode$int(_p4._0)
+								_1: _elm_lang$core$Json_Encode$int(_p5._0)
 							},
 							_1: {ctor: '[]'}
 						}
@@ -8815,9 +8861,9 @@ var _TartanLlama$elmscrew$Main$getLoopEdges = F2(
 	});
 var _TartanLlama$elmscrew$Main$generateProgramGraphEdges = F2(
 	function (prog, n) {
-		var _p5 = prog;
-		if (_p5.ctor === '::') {
-			if (_p5._1.ctor === '::') {
+		var _p6 = prog;
+		if (_p6.ctor === '::') {
+			if (_p6._1.ctor === '::') {
 				return A2(
 					_elm_lang$core$Basics_ops['++'],
 					{
@@ -8844,16 +8890,16 @@ var _TartanLlama$elmscrew$Main$generateProgramGraphEdges = F2(
 					},
 					A2(
 						_elm_lang$core$Basics_ops['++'],
-						A2(_TartanLlama$elmscrew$Main$getLoopEdges, _p5._0, n),
+						A2(_TartanLlama$elmscrew$Main$getLoopEdges, _p6._0, n),
 						A2(
 							_TartanLlama$elmscrew$Main$generateProgramGraphEdges,
-							{ctor: '::', _0: _p5._1._0, _1: _p5._1._1},
+							{ctor: '::', _0: _p6._1._0, _1: _p6._1._1},
 							n + 1)));
 			} else {
 				return A2(
 					_elm_lang$core$Basics_ops['++'],
-					A2(_TartanLlama$elmscrew$Main$getLoopEdges, _p5._0, n),
-					A2(_TartanLlama$elmscrew$Main$generateProgramGraphEdges, _p5._1, n + 1));
+					A2(_TartanLlama$elmscrew$Main$getLoopEdges, _p6._0, n),
+					A2(_TartanLlama$elmscrew$Main$generateProgramGraphEdges, _p6._1, n + 1));
 			}
 		} else {
 			return {
@@ -8904,9 +8950,9 @@ var _TartanLlama$elmscrew$Main$generateProgramGraphEdges = F2(
 var _TartanLlama$elmscrew$Main$update = F2(
 	function (msg, model) {
 		var maybeInitInterpreter = function () {
-			var _p6 = model.interp;
-			if (_p6.ctor === 'Just') {
-				return _p6._0;
+			var _p7 = model.interp;
+			if (_p7.ctor === 'Just') {
+				return _p7._0;
 			} else {
 				return _TartanLlama$elmscrew$Elmscrew_Interpreter$initWithStr(model.program);
 			}
@@ -8931,36 +8977,36 @@ var _TartanLlama$elmscrew$Main$update = F2(
 				};
 			});
 		var handleStep = function (result) {
-			var _p7 = result;
-			if (_p7.ctor === 'Running') {
-				return A2(handleNewExecution, _p7._0, _p7._1);
+			var _p8 = result;
+			if (_p8.ctor === 'Running') {
+				return A2(handleNewExecution, _p8._0, _p8._1);
 			} else {
-				var _p8 = _p7._0;
+				var _p9 = _p8._0;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							interp: _elm_lang$core$Maybe$Just(_p8)
+							interp: _elm_lang$core$Maybe$Just(_p9)
 						}),
-					_1: _TartanLlama$elmscrew$Elmscrew_Arbor$setCurrentNode(_p8.pc)
+					_1: _TartanLlama$elmscrew$Elmscrew_Arbor$setCurrentNode(_p9.pc)
 				};
 			}
 		};
 		var executeInstruction = function (inst) {
-			var _p9 = A2(_TartanLlama$elmscrew$Elmscrew_Interpreter$execute, maybeInitInterpreter, inst);
-			var newInterp = _p9._0;
-			var newOutput = _p9._1;
+			var _p10 = A2(_TartanLlama$elmscrew$Elmscrew_Interpreter$execute, maybeInitInterpreter, inst);
+			var newInterp = _p10._0;
+			var newOutput = _p10._1;
 			return A2(handleNewExecution, newInterp, newOutput);
 		};
-		var _p10 = msg;
-		switch (_p10.ctor) {
+		var _p11 = msg;
+		switch (_p11.ctor) {
 			case 'NewContent':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{program: _p10._0}),
+						{program: _p11._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'BuildGraph':
@@ -8979,12 +9025,12 @@ var _TartanLlama$elmscrew$Main$update = F2(
 						})
 				};
 			case 'Run':
-				var _p11 = A2(
+				var _p12 = A2(
 					_TartanLlama$elmscrew$Elmscrew_Interpreter$runToCompletion,
 					'',
 					_TartanLlama$elmscrew$Elmscrew_Interpreter$initWithStr(model.program));
-				var newInterp = _p11._0;
-				var newOutput = _p11._1;
+				var newInterp = _p12._0;
+				var newOutput = _p12._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -9082,73 +9128,179 @@ var _TartanLlama$elmscrew$Main$NewContent = function (a) {
 var _TartanLlama$elmscrew$Main$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
-		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$style(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'width', _1: '700px'},
+					_1: {
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'margin', _1: 'auto'},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'text-align', _1: 'center'},
+							_1: {ctor: '[]'}
+						}
+					}
+				}),
+			_1: {ctor: '[]'}
+		},
 		{
 			ctor: '::',
 			_0: A2(
-				_elm_lang$html$Html$textarea,
+				_elm_lang$html$Html$h1,
+				{ctor: '[]'},
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$placeholder('Program'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onInput(_TartanLlama$elmscrew$Main$NewContent),
-						_1: {ctor: '[]'}
-					}
-				},
-				{ctor: '[]'}),
+					_0: _elm_lang$html$Html$text('Elmscrew'),
+					_1: {ctor: '[]'}
+				}),
 			_1: {
 				ctor: '::',
 				_0: A2(
-					_elm_lang$html$Html$button,
+					_elm_lang$html$Html$h3,
+					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onClick(_TartanLlama$elmscrew$Main$Run),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('Run'),
-						_1: {ctor: '[]'}
+						_0: _elm_lang$html$Html$text('A '),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$a,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$href('https://en.wikipedia.org/wiki/Brainfuck'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('Brainfuck'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(' interpreter and debugger written in '),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$a,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$href('http://elm-lang.org/'),
+											_1: {ctor: '[]'}
+										},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text('Elm'),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}
+							}
+						}
 					}),
 				_1: {
 					ctor: '::',
 					_0: A2(
-						_elm_lang$html$Html$button,
+						_elm_lang$html$Html$h5,
+						{ctor: '[]'},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onClick(_TartanLlama$elmscrew$Main$Step),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('Step'),
-							_1: {ctor: '[]'}
+							_0: _elm_lang$html$Html$text('By '),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$a,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$href('https://blog.tartanllama.xyz/'),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('TartanLlama'),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
 						}),
 					_1: {
 						ctor: '::',
 						_0: A2(
-							_elm_lang$html$Html$button,
+							_elm_lang$html$Html$textarea,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(_TartanLlama$elmscrew$Main$BuildGraph),
-								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text('Visualise'),
-								_1: {ctor: '[]'}
-							}),
-						_1: {
-							ctor: '::',
-							_0: _TartanLlama$elmscrew$Main$makeInterpreterButtons,
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html$text(model.output),
+								_0: _elm_lang$html$Html_Attributes$placeholder('Program'),
 								_1: {
 									ctor: '::',
-									_0: _TartanLlama$elmscrew$Main$buildTape(model.interp),
+									_0: _elm_lang$html$Html_Events$onInput(_TartanLlama$elmscrew$Main$NewContent),
 									_1: {ctor: '[]'}
+								}
+							},
+							{ctor: '[]'}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$button,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Events$onClick(_TartanLlama$elmscrew$Main$Run),
+											_1: {ctor: '[]'}
+										},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text('Run'),
+											_1: {ctor: '[]'}
+										}),
+									_1: {
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$button,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Events$onClick(_TartanLlama$elmscrew$Main$Step),
+												_1: {ctor: '[]'}
+											},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text('Step'),
+												_1: {ctor: '[]'}
+											}),
+										_1: {
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$button,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Events$onClick(_TartanLlama$elmscrew$Main$BuildGraph),
+													_1: {ctor: '[]'}
+												},
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html$text('Visualise'),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}
+									}
+								}),
+							_1: {
+								ctor: '::',
+								_0: _TartanLlama$elmscrew$Main$makeInterpreterButtons,
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(model.output),
+									_1: {
+										ctor: '::',
+										_0: _TartanLlama$elmscrew$Main$buildTape(model.interp),
+										_1: {ctor: '[]'}
+									}
 								}
 							}
 						}
