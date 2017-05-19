@@ -14,7 +14,7 @@ app.ports.displayGraph.subscribe(function(data) {
 
     var data = { nodes: nodes, edges: edges };
     var options = {
-        width: '700px', height: '700px',
+        width: '700px', height: '500px',
         edges: { arrows: { to: {enabled: true} }, length: 1, color: { color: '#606c76' } },
         nodes: { color: { background: '#9b4dca', border: '#9b4dca', highlight: '#e0abff' },
                  font: { color: '#fff', face: 'Roboto', size: 16 } }

@@ -4,10 +4,73 @@ td:first-child {
 
 #viewport {
     width: 700px;
-    height: 700px;
+    height: 500px;
+}
+
+#content {
+    margin: auto;
+    width: 1080px;
 }
 
 #container {
     margin: auto;
     width: 700px;
+    float: left;
+}
+
+.sidebar {
+    float: left;
+    font-family: 'Shadows Into Light';
+    font-size: 1.3em;
+}
+
+.left p {
+    text-align: right;
+    right: 10px
+}
+
+.right p {
+    left: 10px;
+}
+
+.sidebar p {
+    opacity: 0;
+    transition: opacity 1s;
+    position: relative;
+}
+
+.sidebar p.fade {
+    opacity: 1;
+}
+
+#help-prog {
+    top: 192px;
+}
+
+#help-input {
+    top: 235px;
+}
+
+#help-mem {
+    top: 282px;
+}
+
+#help-ctrl {
+    top: 557px;
+}
+
+#help-output {
+    top: 258px;
+}
+
+#help-index {
+    top: 287px;
+}
+
+#help-value {
+    top: 275px;
+}
+
+#help-drag {
+    top: 558px;
 }

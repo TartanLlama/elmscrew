@@ -5,21 +5,43 @@
 <title>Elmscrew</title>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.19.1/vis.min.js"></script>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Shadows+Into+Light|Roboto:300,300italic,700,700italic">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.css" type="text/css">
 <link rel="stylesheet" href="css/style.css" type="text/css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.19.1/vis.min.css" rel="stylesheet" type="text/css" />
 <script src="https://use.fontawesome.com/85482f81f5.js"></script>
 </head>
 <body>
+  <div id="content">
+  <div class="sidebar left">
+    <p id="help-prog">Program goes here</p>
+    <p id="help-input">Input goes here</p>
+    <p id="help-mem">Memory of the machine</p>
+    <p id="help-ctrl">Control flow graph</p>
+  </div>
   <div id="container">
     <div id="main"></div>
     <div id="viewport"></div>
     <span><i class="fa fa-copyright"></i>2017 <a href="https://blog.tartanllama.xyz/">Simon Brand</a></span>
     <span style="float: right;">&lt;/&gt; on <a href="https://github.com/tartanllama/elmscrew">Github</a> &nbsp;<i class="fa fa-github"></i></span>
   </div>
+  <div class="sidebar right">
+    <a href="javascript:toggleHelp()"><i class="fa fa-question"></i></a>
+    <p id="help-output">Output shows up here</p>
+    <p id="help-index">Index</p>
+    <p id="help-value">Value</p>
+    <p id="help-drag">Try dragging the nodes!</p>
+  </div>
+</div>
+
   <script src="js/elmscrew.js"></script>
   <script src="js/programGraph.js"></script>
-
-
+  <script>
+    function toggleHelp() {
+        var elements = document.querySelectorAll('.sidebar p');
+    Array.prototype.forEach.call(elements, function(el, i){
+    el.classList.toggle('fade');
+    });
+    }
+  </script>
 </body>
