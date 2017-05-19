@@ -1,4 +1,4 @@
-module Elmscrew.Interpreter exposing (Interpreter,init,initWithStr,initWithProg,step,runToCompletion,Status(..),execute)
+module Elmscrew.Interpreter exposing (Interpreter,initWithStr,initWithProg,step,runToCompletion,Status(..),execute)
 
 import Elmscrew.Parser exposing (..)
 import Elmscrew.Machine as Machine exposing (..)
@@ -15,12 +15,13 @@ type alias Interpreter =
     , output : Maybe Char
     }
 
-init = Interpreter Array.empty Machine.init 0 Nothing
 initWithStr str = initWithProg <| parse str
 initWithProg prog = Interpreter prog Machine.init 0 Nothing
 
 type Status = Running Interpreter String (Maybe Char) | Complete Interpreter
 
+-- Execute an instruction for an interpreter with the given input and return
+-- a new interpreter, new input, and maybe some output
 execute : Interpreter -> Inst -> String -> (Interpreter, String, Maybe Char)
 execute interp inst input =
     case inst of
@@ -49,6 +50,7 @@ execute interp inst input =
             ({ interp | pc = if Machine.get interp.machine > 0 then i else interp.pc + 1}, input, Nothing)
 
 
+-- Step the interpreter by a single instruction
 step : Interpreter -> String -> Status
 step interp input = let inst = Array.get interp.pc interp.instructions in
                     case inst of
@@ -58,6 +60,7 @@ step interp input = let inst = Array.get interp.pc interp.instructions in
                                       x -> Running { newInterp | pc = newInterp.pc + 1 } newInput newOutput
                         Nothing -> Complete interp
 
+-- Run a program until it is complete
 runToCompletion output interp input =
     case step interp input of
         Running newInterp newInput char ->

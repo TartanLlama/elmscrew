@@ -6,17 +6,17 @@ type Inst = Right | Left | Inc | Dec | Output | Input | JumpMarker | Jump Int
 
 toChar : Inst -> Char
 toChar inst = case inst of
-                  Right -> '>' 
-                  Left -> '<' 
-                  Inc -> '+' 
-                  Dec -> '-' 
-                  Output -> '.' 
+                  Right -> '>'
+                  Left -> '<'
+                  Inc -> '+'
+                  Dec -> '-'
+                  Output -> '.'
                   Input -> ','
-                  JumpMarker -> '['                            
+                  JumpMarker -> '['
                   Jump i -> ']'
-                  
-                  
-    
+
+
+
 toInst : Int -> List Int -> Char -> (Maybe Inst, List Int, Int)
 toInst charIdx stack c = case c of
                '>' -> (Just Right, stack, charIdx+1)

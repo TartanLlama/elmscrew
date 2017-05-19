@@ -1,4 +1,4 @@
-port module Elmscrew.Arbor exposing (..)
+port module Elmscrew.Vis exposing (..)
 
 import Json.Encode
 
