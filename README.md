@@ -2,9 +2,9 @@
 An online brainfuck debugger
 
 ### Current status
-Currently it will allow you to run your program till completion and visualise a graph of your code.
+Currently it will allow you to step through your code or run it to completion. It will also visualise a graph of your code and let you execute arbitrary instructions.
 
 ### To do
-- Allow stepping through code
-- Allow insertion of instructions
-- Visualise memory
+- Implement input
+- Make it look nice
+- Validate interpreter somewhat
