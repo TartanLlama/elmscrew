@@ -19,30 +19,7 @@
     <span style="float: right;">&lt;/&gt; on <a href="https://github.com/tartanllama/elmscrew">Github</a> &nbsp;<i class="fa fa-github"></i></span>
   </div>
   <script src="js/elmscrew.js"></script>
-  <script>
-    var node = document.getElementById('main');
-    var app = Elm.Main.embed(node);
-
-    var network;
-
-    app.ports.setCurrentNode.subscribe(function(nodeId) {
-        network.selectNodes(network.findNode(nodeId));
-    });
-
-    app.ports.displayGraph.subscribe(function(data) {
-        var nodes = new vis.DataSet(data[0]);
-        var edges = new vis.DataSet(data[1]);
-        var container = document.getElementById('viewport');
-
-        var data = { nodes: nodes, edges: edges };
-        var options = {
-             width: '700px', height: '700px',
-             edges: { arrows: { to: {enabled: true} }, length: 1 }
-        };
-
-        network = new vis.Network(container, data, options);
-    });
-  </script>
+  <script src="js/programGraph.js"></script>
 
 
 </body>
