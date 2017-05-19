@@ -4782,6 +4782,11 @@ var _TartanLlama$elmscrew$Elmscrew_Arbor$displayGraph = _elm_lang$core$Native_Pl
 	function (v) {
 		return [v._0, v._1];
 	});
+var _TartanLlama$elmscrew$Elmscrew_Arbor$setCurrentNode = _elm_lang$core$Native_Platform.outgoingPort(
+	'setCurrentNode',
+	function (v) {
+		return v;
+	});
 
 var _TartanLlama$elmscrew$Elmscrew_Utils$unwrap = F2(
 	function (msg, maybe) {
@@ -8745,7 +8750,37 @@ var _TartanLlama$elmscrew$Main$generateProgramGraphNodes = F2(
 				_1: A2(_TartanLlama$elmscrew$Main$generateProgramGraphNodes, _p3._1, n + 1)
 			};
 		} else {
-			return {ctor: '[]'};
+			return A2(
+				_elm_lang$core$List$map,
+				function (name) {
+					return _elm_lang$core$Json_Encode$object(
+						{
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'id',
+								_1: _elm_lang$core$Json_Encode$string(name)
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'label',
+									_1: _elm_lang$core$Json_Encode$string(name)
+								},
+								_1: {ctor: '[]'}
+							}
+						});
+				},
+				{
+					ctor: '::',
+					_0: 'start',
+					_1: {
+						ctor: '::',
+						_0: 'end',
+						_1: {ctor: '[]'}
+					}
+				});
 		}
 	});
 var _TartanLlama$elmscrew$Main$getLoopEdges = F2(
@@ -8821,7 +8856,49 @@ var _TartanLlama$elmscrew$Main$generateProgramGraphEdges = F2(
 					A2(_TartanLlama$elmscrew$Main$generateProgramGraphEdges, _p5._1, n + 1));
 			}
 		} else {
-			return {ctor: '[]'};
+			return {
+				ctor: '::',
+				_0: _elm_lang$core$Json_Encode$object(
+					{
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'from',
+							_1: _elm_lang$core$Json_Encode$string('start')
+						},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'to',
+								_1: _elm_lang$core$Json_Encode$int(0)
+							},
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$core$Json_Encode$object(
+						{
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'from',
+								_1: _elm_lang$core$Json_Encode$int(n - 1)
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'to',
+									_1: _elm_lang$core$Json_Encode$string('end')
+								},
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {ctor: '[]'}
+				}
+			};
 		}
 	});
 var _TartanLlama$elmscrew$Main$update = F2(
@@ -8850,7 +8927,7 @@ var _TartanLlama$elmscrew$Main$update = F2(
 									'',
 									A2(_elm_lang$core$Maybe$map, _elm_lang$core$String$fromChar, output)))
 						}),
-					_1: _elm_lang$core$Platform_Cmd$none
+					_1: _TartanLlama$elmscrew$Elmscrew_Arbor$setCurrentNode(interp.pc)
 				};
 			});
 		var handleStep = function (result) {
@@ -8858,31 +8935,32 @@ var _TartanLlama$elmscrew$Main$update = F2(
 			if (_p7.ctor === 'Running') {
 				return A2(handleNewExecution, _p7._0, _p7._1);
 			} else {
+				var _p8 = _p7._0;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							interp: _elm_lang$core$Maybe$Just(_p7._0)
+							interp: _elm_lang$core$Maybe$Just(_p8)
 						}),
-					_1: _elm_lang$core$Platform_Cmd$none
+					_1: _TartanLlama$elmscrew$Elmscrew_Arbor$setCurrentNode(_p8.pc)
 				};
 			}
 		};
 		var executeInstruction = function (inst) {
-			var _p8 = A2(_TartanLlama$elmscrew$Elmscrew_Interpreter$execute, maybeInitInterpreter, inst);
-			var newInterp = _p8._0;
-			var newOutput = _p8._1;
+			var _p9 = A2(_TartanLlama$elmscrew$Elmscrew_Interpreter$execute, maybeInitInterpreter, inst);
+			var newInterp = _p9._0;
+			var newOutput = _p9._1;
 			return A2(handleNewExecution, newInterp, newOutput);
 		};
-		var _p9 = msg;
-		switch (_p9.ctor) {
+		var _p10 = msg;
+		switch (_p10.ctor) {
 			case 'NewContent':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{program: _p9._0}),
+						{program: _p10._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'BuildGraph':
@@ -8901,12 +8979,12 @@ var _TartanLlama$elmscrew$Main$update = F2(
 						})
 				};
 			case 'Run':
-				var _p10 = A2(
+				var _p11 = A2(
 					_TartanLlama$elmscrew$Elmscrew_Interpreter$runToCompletion,
 					'',
 					_TartanLlama$elmscrew$Elmscrew_Interpreter$initWithStr(model.program));
-				var newInterp = _p10._0;
-				var newOutput = _p10._1;
+				var newInterp = _p11._0;
+				var newOutput = _p11._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -8915,7 +8993,7 @@ var _TartanLlama$elmscrew$Main$update = F2(
 							output: newOutput,
 							interp: _elm_lang$core$Maybe$Just(newInterp)
 						}),
-					_1: _elm_lang$core$Platform_Cmd$none
+					_1: _TartanLlama$elmscrew$Elmscrew_Arbor$setCurrentNode(newInterp.pc)
 				};
 			case 'Step':
 				return handleStep(

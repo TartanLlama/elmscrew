@@ -18,6 +18,12 @@
     var node = document.getElementById('main');
     var app = Elm.Main.embed(node);
 
+    var network;
+    
+    app.ports.setCurrentNode.subscribe(function(nodeId) {
+        network.selectNodes(network.findNode(nodeId));
+    });
+    
     app.ports.displayGraph.subscribe(function(data) {
         var nodes = new vis.DataSet(data[0]);
         var edges = new vis.DataSet(data[1]);
@@ -29,7 +35,7 @@
              edges: { arrows: { to: {enabled: true} }, length: 1 }
         };
 
-        var network = new vis.Network(container, data, options);
+        network = new vis.Network(container, data, options);
     });
   </script>
 

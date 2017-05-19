@@ -3,11 +3,12 @@ import Html.Attributes exposing (placeholder,style)
 import Html.Events exposing (onInput, onClick)
 import Array exposing (Array)
 import Json.Encode exposing (int, list, object, string)
+import Platform.Cmd exposing (Cmd)
 import Dict
    
 import Elmscrew.Machine as Machine exposing (Machine)
 import Elmscrew.Interpreter as Interpreter exposing (Interpreter)
-import Elmscrew.Arbor exposing (displayGraph)
+import Elmscrew.Arbor exposing (displayGraph,setCurrentNode)
 import Elmscrew.Parser as Parser exposing (parse)
 import Elmscrew.Instruction as Instruction exposing (Inst)
 
@@ -34,12 +35,13 @@ update msg model =
         handleNewExecution interp output =
             ({model | interp = Just interp,
                       output = model.output ++ (Maybe.withDefault "" <| Maybe.map String.fromChar output)}
-            , Cmd.none)
+            , setCurrentNode interp.pc)
         
         handleStep result =
             case result of
                 Interpreter.Running newInterp output -> handleNewExecution newInterp output
-                Interpreter.Complete newInterp -> ({model | interp = Just newInterp}, Cmd.none)
+                Interpreter.Complete newInterp -> ({model | interp = Just newInterp},
+                                                   setCurrentNode newInterp.pc)
 
         maybeInitInterpreter =
             case model.interp of
@@ -60,7 +62,7 @@ update msg model =
             let (newInterp, newOutput) =
                     Interpreter.runToCompletion "" (Interpreter.initWithStr model.program)
             in
-                ({model | output = newOutput, interp = Just newInterp}, Cmd.none)
+                ({model | output = newOutput, interp = Just newInterp}, setCurrentNode newInterp.pc)
 
         Step -> handleStep <| Interpreter.step maybeInitInterpreter
         Right -> executeInstruction Instruction.Right
@@ -69,8 +71,6 @@ update msg model =
         Dec -> executeInstruction Instruction.Dec
         Output -> executeInstruction Instruction.Output
         Input -> executeInstruction Instruction.Input
-        
-        
 
 getLoopEdges : Inst -> Int -> List Json.Encode.Value
 getLoopEdges inst n = case inst of
@@ -83,7 +83,7 @@ generateProgramGraphNodes prog n =
         (x::xs) -> object [ ("id", int n),
                             ("label", string <| String.fromChar <| Instruction.toChar x) ]
                    :: generateProgramGraphNodes xs (n+1)
-        _ -> []
+        _ -> List.map (\name -> object [("id", string name),("label", string name)]) ["start", "end"]
 
 generateProgramGraphEdges : List Inst -> Int -> List Json.Encode.Value
 generateProgramGraphEdges prog n =
@@ -93,7 +93,8 @@ generateProgramGraphEdges prog n =
                       ++ generateProgramGraphEdges (y::xs) (n+1)
                           
         (x::y) -> (getLoopEdges x n) ++ (generateProgramGraphEdges (y) (n+1))
-        _ -> []
+        _ -> [object [("from", string "start"),("to", int 0)],
+              object [("from", int (n-1)),("to", string "end")]]
     
 subscriptions : model -> Sub msg
 subscriptions model = Sub.none
@@ -149,3 +150,4 @@ view model =
         ]
 
     
+
