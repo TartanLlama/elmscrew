@@ -133,8 +133,8 @@ buildTape interp =
 makeInterpreterButtons = div [] <|
                          List.map (\x -> button [ onClick <| Tuple.first x] [ text <| Tuple.second x])
                              [
-                              (Right, ">"),
                               (Left, "<"),
+                              (Right, ">"),
                               (Inc, "+"),
                               (Dec, "-"),
                               (Output, "."),

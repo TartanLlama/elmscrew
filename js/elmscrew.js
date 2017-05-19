@@ -9104,10 +9104,10 @@ var _TartanLlama$elmscrew$Main$makeInterpreterButtons = A2(
 		},
 		{
 			ctor: '::',
-			_0: {ctor: '_Tuple2', _0: _TartanLlama$elmscrew$Main$Right, _1: '>'},
+			_0: {ctor: '_Tuple2', _0: _TartanLlama$elmscrew$Main$Left, _1: '<'},
 			_1: {
 				ctor: '::',
-				_0: {ctor: '_Tuple2', _0: _TartanLlama$elmscrew$Main$Left, _1: '<'},
+				_0: {ctor: '_Tuple2', _0: _TartanLlama$elmscrew$Main$Right, _1: '>'},
 				_1: {
 					ctor: '::',
 					_0: {ctor: '_Tuple2', _0: _TartanLlama$elmscrew$Main$Inc, _1: '+'},
