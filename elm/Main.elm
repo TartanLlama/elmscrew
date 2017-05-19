@@ -8,7 +8,7 @@ import Dict
 
 import Elmscrew.Machine as Machine exposing (Machine)
 import Elmscrew.Interpreter as Interpreter exposing (Interpreter)
-import Elmscrew.Arbor exposing (displayGraph,setCurrentNode)
+import Elmscrew.Arbor exposing (displayGraph,sendCurrentNode)
 import Elmscrew.Parser as Parser exposing (parse)
 import Elmscrew.Instruction as Instruction exposing (Inst)
 
@@ -31,6 +31,13 @@ reset model = (Model Nothing "" "" model.program, Cmd.none)
 type Msg = NewProgram String | NewInput String | Run | Step | Reset
          | Right | Left | Inc | Dec | Output | Input
 
+setCurrentNode : Interpreter -> Cmd Msg
+setCurrentNode interp =
+    let id = if interp.pc == (Array.length interp.instructions)
+             then "end"
+             else toString interp.pc
+    in
+        sendCurrentNode id
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -38,13 +45,13 @@ update msg model =
         handleNewExecution interp output =
             ({model | interp = Just interp,
                       output = model.output ++ (Maybe.withDefault "" <| Maybe.map String.fromChar output)}
-            , setCurrentNode interp.pc)
+            , setCurrentNode interp)
 
         handleStep result =
             case result of
                 Interpreter.Running newInterp output -> handleNewExecution newInterp output
                 Interpreter.Complete newInterp -> ({model | interp = Just newInterp},
-                                                   setCurrentNode newInterp.pc)
+                                                   setCurrentNode newInterp)
 
         maybeInitInterpreter =
             case model.interp of
@@ -67,7 +74,7 @@ update msg model =
             let (newInterp, newOutput) =
                     Interpreter.runToCompletion "" (Interpreter.initWithStr model.program)
             in
-                ({model | output = newOutput, interp = Just newInterp}, setCurrentNode newInterp.pc)
+                ({model | output = newOutput, interp = Just newInterp}, setCurrentNode newInterp)
 
         Step -> handleStep <| Interpreter.step maybeInitInterpreter
         Right -> executeInstruction Instruction.Right

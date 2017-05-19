@@ -4782,8 +4782,8 @@ var _TartanLlama$elmscrew$Elmscrew_Arbor$displayGraph = _elm_lang$core$Native_Pl
 	function (v) {
 		return [v._0, v._1];
 	});
-var _TartanLlama$elmscrew$Elmscrew_Arbor$setCurrentNode = _elm_lang$core$Native_Platform.outgoingPort(
-	'setCurrentNode',
+var _TartanLlama$elmscrew$Elmscrew_Arbor$sendCurrentNode = _elm_lang$core$Native_Platform.outgoingPort(
+	'sendCurrentNode',
 	function (v) {
 		return v;
 	});
@@ -8947,6 +8947,12 @@ var _TartanLlama$elmscrew$Main$generateProgramGraphEdges = F2(
 			};
 		}
 	});
+var _TartanLlama$elmscrew$Main$setCurrentNode = function (interp) {
+	var id = _elm_lang$core$Native_Utils.eq(
+		interp.pc,
+		_elm_lang$core$Array$length(interp.instructions)) ? 'end' : _elm_lang$core$Basics$toString(interp.pc);
+	return _TartanLlama$elmscrew$Elmscrew_Arbor$sendCurrentNode(id);
+};
 var _TartanLlama$elmscrew$Main$Model = F4(
 	function (a, b, c, d) {
 		return {interp: a, output: b, input: c, program: d};
@@ -8989,7 +8995,7 @@ var _TartanLlama$elmscrew$Main$update = F2(
 									'',
 									A2(_elm_lang$core$Maybe$map, _elm_lang$core$String$fromChar, output)))
 						}),
-					_1: _TartanLlama$elmscrew$Elmscrew_Arbor$setCurrentNode(interp.pc)
+					_1: _TartanLlama$elmscrew$Main$setCurrentNode(interp)
 				};
 			});
 		var handleStep = function (result) {
@@ -9005,7 +9011,7 @@ var _TartanLlama$elmscrew$Main$update = F2(
 						{
 							interp: _elm_lang$core$Maybe$Just(_p9)
 						}),
-					_1: _TartanLlama$elmscrew$Elmscrew_Arbor$setCurrentNode(_p9.pc)
+					_1: _TartanLlama$elmscrew$Main$setCurrentNode(_p9)
 				};
 			}
 		};
@@ -9060,7 +9066,7 @@ var _TartanLlama$elmscrew$Main$update = F2(
 							output: newOutput,
 							interp: _elm_lang$core$Maybe$Just(newInterp)
 						}),
-					_1: _TartanLlama$elmscrew$Elmscrew_Arbor$setCurrentNode(newInterp.pc)
+					_1: _TartanLlama$elmscrew$Main$setCurrentNode(newInterp)
 				};
 			case 'Step':
 				return handleStep(
