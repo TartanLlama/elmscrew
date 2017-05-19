@@ -8612,33 +8612,58 @@ var _TartanLlama$elmscrew$Main$buildTape = function (interp) {
 				_1: {ctor: '[]'}
 			}
 		});
-	var buildHeaderList = A2(
-		_elm_lang$core$List$map,
-		function (_p0) {
+	var highlightedNodeStyle = _elm_lang$html$Html_Attributes$style(
+		{
+			ctor: '::',
+			_0: {ctor: '_Tuple2', _0: 'background', _1: '#9b4dca'},
+			_1: {
+				ctor: '::',
+				_0: {ctor: '_Tuple2', _0: 'color', _1: '#fff'},
+				_1: {ctor: '[]'}
+			}
+		});
+	var nodeStyle = F2(
+		function (cursor, n) {
+			return _elm_lang$core$Native_Utils.eq(n, cursor) ? {
+				ctor: '::',
+				_0: highlightedNodeStyle,
+				_1: {ctor: '[]'}
+			} : {ctor: '[]'};
+		});
+	var buildTdNode = F2(
+		function (cursor, n) {
 			return A2(
 				_elm_lang$html$Html$td,
-				{ctor: '[]'},
-				_elm_lang$core$List$singleton(
-					_elm_lang$html$Html$text(
-						_elm_lang$core$Basics$toString(_p0))));
-		},
-		A2(_elm_lang$core$List$range, 0, 511));
+				A2(nodeStyle, cursor, n),
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(
+						_elm_lang$core$Basics$toString(n)),
+					_1: {ctor: '[]'}
+				});
+		});
+	var buildHeaderList = function (cursor) {
+		return A2(
+			_elm_lang$core$List$map,
+			buildTdNode(cursor),
+			A2(_elm_lang$core$List$range, 0, 511));
+	};
 	var getData = F2(
 		function (tape, n) {
-			var _p1 = A2(_elm_lang$core$Dict$get, n, tape);
-			if (_p1.ctor === 'Just') {
-				return _p1._0;
+			var _p0 = A2(_elm_lang$core$Dict$get, n, tape);
+			if (_p0.ctor === 'Just') {
+				return _p0._0;
 			} else {
 				return 0;
 			}
 		});
-	var buildDataList = F2(
-		function (tape, n) {
+	var buildDataList = F3(
+		function (tape, cursor, n) {
 			return _elm_lang$core$Native_Utils.eq(n, 512) ? {ctor: '[]'} : {
 				ctor: '::',
 				_0: A2(
 					_elm_lang$html$Html$td,
-					{ctor: '[]'},
+					A2(nodeStyle, cursor, n),
 					{
 						ctor: '::',
 						_0: _elm_lang$html$Html$text(
@@ -8646,11 +8671,12 @@ var _TartanLlama$elmscrew$Main$buildTape = function (interp) {
 								A2(getData, tape, n))),
 						_1: {ctor: '[]'}
 					}),
-				_1: A2(buildDataList, tape, n + 1)
+				_1: A3(buildDataList, tape, cursor, n + 1)
 			};
 		});
-	var _p2 = interp;
-	if (_p2.ctor === 'Just') {
+	var _p1 = interp;
+	if (_p1.ctor === 'Just') {
+		var _p2 = _p1._0;
 		return A2(
 			_elm_lang$html$Html$table,
 			{ctor: '[]'},
@@ -8668,13 +8694,13 @@ var _TartanLlama$elmscrew$Main$buildTape = function (interp) {
 						_0: A2(
 							_elm_lang$html$Html$tr,
 							{ctor: '[]'},
-							buildHeaderList),
+							buildHeaderList(_p2.machine.position)),
 						_1: {
 							ctor: '::',
 							_0: A2(
 								_elm_lang$html$Html$tr,
 								{ctor: '[]'},
-								A2(buildDataList, _p2._0.machine.tape, 0)),
+								A3(buildDataList, _p2.machine.tape, _p2.machine.position, 0)),
 							_1: {ctor: '[]'}
 						}
 					}),

@@ -105,18 +105,24 @@ buildTape interp =
                    Just data -> data
                    Nothing -> 0
 
-        buildDataList tape n =
-            if n == 512 then []
-            else (td [] [ text <| toString <| getData tape n ]) :: buildDataList tape (n+1)
+        highlightedNodeStyle = style [ ("background", "#9b4dca"), ("color", "#fff") ]
+        nodeStyle cursor n = if n == cursor then [highlightedNodeStyle] else []
 
-        buildHeaderList = (List.map (toString>>text>>List.singleton>>(td [])) (List.range 0 511))
+        buildDataList tape cursor n =
+            if n == 512 then []
+            else (td (nodeStyle cursor n) [ (getData tape n)|>toString|>text ]) :: (buildDataList tape cursor (n+1))
+
+        buildTdNode cursor n = td (nodeStyle cursor n) [n |> toString |> text]
+        buildHeaderList cursor = (List.map (buildTdNode cursor) (List.range 0 511))
                           
         tableStyle = style [ ("overflow-x", "scroll"), ("width", "700px") ]
                      
     in
         case interp of
             Just interp ->
-                table [] [ div [tableStyle] [tr [] buildHeaderList, tr [] (buildDataList interp.machine.tape 0) ]]
+                table [] [ div [tableStyle] [tr [] (buildHeaderList interp.machine.position)
+                                            ,tr [] (buildDataList interp.machine.tape interp.machine.position 0) ]
+                         ]
             Nothing -> div[][]
 
 makeInterpreterButtons = div [] <|
