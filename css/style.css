@@ -56,7 +56,7 @@ td:first-child {
 }
 
 #help-ctrl {
-    top: 557px;
+    top: 540px;
 }
 
 #help-output {
@@ -73,4 +73,13 @@ td:first-child {
 
 #help-drag {
     top: 558px;
+}
+
+#help-lang {
+    top: 344px;
+    position: relative;
+}
+
+#help-lang p {
+    margin-bottom: 0px;
 }
